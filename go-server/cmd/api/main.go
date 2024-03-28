@@ -15,6 +15,7 @@ func main() {
 
 	// Create a Router
 	router := mux.NewRouter()
+	router.HandleFunc("/api/go/users/login", handlers.Login(db.DB)).Methods("POST")
 	router.HandleFunc("/api/go/users", handlers.GetUsers(db.DB)).Methods("GET")
 	router.HandleFunc("/api/go/users", handlers.CreateUser(db.DB)).Methods("POST")
 	router.HandleFunc("/api/go/users/{id}", handlers.GetUser(db.DB)).Methods("GET")

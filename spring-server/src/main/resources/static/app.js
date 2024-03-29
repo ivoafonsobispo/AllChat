@@ -5,8 +5,8 @@ const stompClient = new StompJs.Client({
 stompClient.onConnect = (frame) => {
     setConnected(true);
     console.log('Connected: ' + frame);
-    stompClient.subscribe('/topic/greetings', (greeting) => {
-        showGreeting(JSON.parse(greeting.body).content);
+    stompClient.subscribe('/topic/chat', (message) => {
+        showMessage(JSON.parse(message.body).content);
     });
 };
 
@@ -28,7 +28,7 @@ function setConnected(connected) {
     else {
         $("#conversation").hide();
     }
-    $("#greetings").html("");
+    $("#chat").html("");
 }
 
 function connect() {
@@ -42,14 +42,28 @@ function disconnect() {
 }
 
 function sendName() {
-    stompClient.publish({
-        destination: "/app/hello",
-        body: JSON.stringify({'name': $("#name").val()})
-    });
+    // Retrieve stored credentials
+    var storedCredentials = getUserCredentials();
+
+    // Check if credentials exist
+    if (storedCredentials) {
+        // If credentials exist, extract the username
+        var username = storedCredentials.name;
+
+        // Publish message with the username
+        stompClient.publish({
+            destination: "/app/chat",
+            body: JSON.stringify({'name': username, 'content': $('#message').val()})
+        });
+    } else {
+        // Alert user if credentials not found
+        alert('User credentials not found.');
+    }
 }
 
-function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
+function showMessage(message) {
+    console.log('Message received:', message);
+    $("#chat").append("<tr><td>" + message + "</td></tr>");
 }
 
 function createAccount() {
@@ -74,6 +88,23 @@ function createAccount() {
     });
 }
 
+function getUserCredentials() {
+    var storedCredentials = localStorage.getItem('userCredentials');
+    if (storedCredentials) {
+        return JSON.parse(storedCredentials);
+    } else {
+        return null; // Return null if credentials are not found
+    }
+}
+
+// Check if user credentials exist in local storage on page load
+var storedCredentials = getUserCredentials();
+if (storedCredentials) {
+    // If credentials exist, populate the login form
+    $('#name').val(storedCredentials.name);
+    $('#password').val(storedCredentials.password);
+}
+
 $('#loginForm').submit(function(event) {
     event.preventDefault(); // Prevent form submission
 
@@ -94,15 +125,13 @@ $('#loginForm').submit(function(event) {
         contentType: 'application/json',
         data: JSON.stringify(data),
         success: function(response) {
-            // Handle successful login
             console.log('Login successful:', response);
-            // Redirect user or perform any other actions
+            // Save user credentials in local storage
+            localStorage.setItem('userCredentials', JSON.stringify(data));
             alert('Login successful!');
         },
         error: function(xhr, status, error) {
-            // Handle login error
             console.error('Error logging in:', error);
-            // Display error message to the user
             alert('Login failed. Please check your credentials.');
         }
     });

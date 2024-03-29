@@ -1,4 +1,12 @@
 services:
+  chatdb:
+    container_name: chatdb
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongo-data:/data/db
+
   goapp:
     container_name: goapp
     image: goapp:1.0.0

@@ -8,11 +8,11 @@
 		<version>3.2.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example</groupId>
-	<artifactId>messaging-stomp-websocket-complete</artifactId>
+	<groupId>pt.ipleiria</groupId>
+	<artifactId>chat</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>messaging-stomp-websocket-complete</name>
-	<description>Demo project for Spring Boot</description>
+	<name>chatapp</name>
+	<description>Chat App</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

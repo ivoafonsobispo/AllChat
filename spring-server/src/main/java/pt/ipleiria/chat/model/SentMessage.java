@@ -1,5 +1,8 @@
 package pt.ipleiria.chat.model;
 
+import lombok.Getter;
+
+@Getter
 public class SentMessage {
 
 	private String content;
@@ -9,10 +12,6 @@ public class SentMessage {
 
 	public SentMessage(String content) {
 		this.content = content;
-	}
-
-	public String getContent() {
-		return content;
 	}
 
 }

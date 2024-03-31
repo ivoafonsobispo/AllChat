@@ -1,29 +1,24 @@
 services:
-  springbootapp:
-    container_name: springbootapp
-    build:
-      context: ./spring-server
-      dockerfile: spring.dockerfile
+  accountsdb:
+    container_name: accountsdb
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     ports:
-      - '8080:8080'
-    depends_on:
-      - chatdb
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
   chatdb:
     container_name: chatdb
     image: mongo:latest
-    ports:
-      - 27017:27017
-    volumes:
-      - mongo-data:/var/lib/mongodb/data
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
       MONGO_INITDB_ROOT_PASSWORD: mongo
-    healthcheck:
-      test: ["CMD", "mongo", "--eval", "'db.stats().ok'"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+    ports:
+      - 27017:27017
 
   goapp:
     container_name: goapp
@@ -38,17 +33,15 @@ services:
     depends_on:
       - accountsdb
 
-  accountsdb:
-    container_name: accountsdb
-    image: postgres:13
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+  springbootapp:
+    container_name: springbootapp
+    build:
+      context: ./spring-server
+      dockerfile: spring.dockerfile
     ports:
-      - 5432:5432
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+      - '8080:8080'
+    links:
+      - chatdb
 
 volumes:
   pgdata: {}

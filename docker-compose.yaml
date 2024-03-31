@@ -19,6 +19,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: mongo
     ports:
       - 27017:27017
+    volumes:
+      - mongo-data:/var/lib/mongodb/data
 
   goapp:
     container_name: goapp
@@ -40,7 +42,7 @@ services:
       dockerfile: spring.dockerfile
     ports:
       - '8080:8080'
-    links:
+    depends_on:
       - chatdb
 
 volumes:

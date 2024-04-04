@@ -6,8 +6,8 @@ COPY . .
 
 RUN go mod download
 
-RUN go build -o bin/chat-backend ./cmd/ws
+RUN go build -o bin/chat-backend ./cmd/api
 
-EXPOSE 8001
+EXPOSE 8002
 
 CMD ["./bin/chat-backend"]

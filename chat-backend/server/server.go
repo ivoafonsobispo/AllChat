@@ -3,8 +3,8 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"time"
 
@@ -12,11 +12,9 @@ import (
 	"chat/utils"
 
 	"go.mongodb.org/mongo-driver/mongo"
-	"golang.org/x/net/websocket"
 )
 
 type Server struct {
-	conns   map[*websocket.Conn]bool
 	db      *mongo.Database
 	message *mongo.Collection
 }
@@ -25,18 +23,17 @@ func NewServer(db *mongo.Database) *Server {
 	message := db.Collection("messages")
 
 	return &Server{
-		conns:   make(map[*websocket.Conn]bool),
 		db:      db,
 		message: message,
 	}
 }
 
 func (s *Server) Start() {
-	http.Handle("/chat", utils.HandleCORS(websocket.Handler(s.handleWS)))
+	http.HandleFunc("/chat", utils.HandleCORS(http.HandlerFunc(s.handleChat)))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Server is running!")
 	})
-	http.ListenAndServe(":8001", nil)
+	http.ListenAndServe(":8002", nil)
 }
 
 func (s *Server) Close() {
@@ -48,30 +45,21 @@ func (s *Server) Close() {
 	}
 }
 
-func (s *Server) handleWS(ws *websocket.Conn) {
-	fmt.Println("New incoming connect from client:", ws.RemoteAddr())
-	s.conns[ws] = true
-	s.readLoop(ws)
-}
-
-func (s *Server) readLoop(ws *websocket.Conn) {
-	for {
-		var msg models.Message
-		err := websocket.JSON.Receive(ws, &msg)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			fmt.Println("Read error:", err)
-			continue
-		}
-		messageStr := fmt.Sprintf("%s: %s", msg.Name, msg.Content)
-		messageBytes := []byte(messageStr)
-		s.broadcast(messageBytes)
-
-		msg.Time = time.Now()
-		s.saveMessage(msg)
+func (s *Server) handleChat(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
 	}
+
+	var msg models.Message
+	err := json.NewDecoder(r.Body).Decode(&msg)
+	if err != nil {
+		http.Error(w, "Error decoding message", http.StatusBadRequest)
+		return
+	}
+
+	msg.Time = time.Now()
+	s.saveMessage(msg)
 }
 
 func (s *Server) saveMessage(msg models.Message) {
@@ -81,15 +69,5 @@ func (s *Server) saveMessage(msg models.Message) {
 	_, err := s.message.InsertOne(ctx, msg)
 	if err != nil {
 		fmt.Println("Error saving message:", err)
-	}
-}
-
-func (s *Server) broadcast(b []byte) {
-	for ws := range s.conns {
-		go func(ws *websocket.Conn) {
-			if _, err := ws.Write(b); err != nil {
-				fmt.Println("write error:", err)
-			}
-		}(ws)
 	}
 }

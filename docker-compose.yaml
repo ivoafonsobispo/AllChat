@@ -42,9 +42,18 @@ services:
       context: ./chat-backend
       dockerfile: go.dockerfile
     ports:
-      - '8001:8001'
+      - '8002:8002'
     depends_on:
       - chat_db
+
+  ws_server:
+    container_name: ws_server
+    image: go_ws:1.0.0
+    build:
+      context: ./ws-server
+      dockerfile: go.dockerfile
+    ports:
+      - '8001:8001'
 
   client_frontend:
     container_name: client_frontend

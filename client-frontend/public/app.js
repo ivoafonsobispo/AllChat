@@ -40,6 +40,16 @@ function sendName() {
         };
 
         socket.send(JSON.stringify(message));
+
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:8002/chat',
+            contentType: 'application/json',
+            data: JSON.stringify({ name: message.name, content: message.content }),
+            error: function (xhr, status, error) {
+                console.error('Error saving message:', error);
+            }
+        });
     } else {
         alert('User credentials not found.');
     }

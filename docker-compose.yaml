@@ -44,6 +44,15 @@ services:
     ports:
       - '8001:8001'
 
+  client_frontend:
+    container_name: client_frontend
+    image: express_client_frondend:1.0.0
+    build:
+      context: ./client-frontend
+      dockerfile: node.dockerfile
+    ports:
+      - '3000:3000'
+
 volumes:
   pgdata: {}
   mongo-data: {}

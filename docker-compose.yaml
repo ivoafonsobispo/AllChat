@@ -1,6 +1,6 @@
 services:
-  accountsdb:
-    container_name: accountsdb
+  accounts_db:
+    container_name: accounts_db
     image: postgres:13
     environment:
       POSTGRES_USER: postgres
@@ -11,8 +11,8 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  chatdb:
-    container_name: chatdb
+  chat_db:
+    container_name: chat_db
     image: mongo:latest
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
@@ -22,28 +22,18 @@ services:
     volumes:
       - mongo-data:/var/lib/mongodb/data
 
-  goapp:
-    container_name: goapp
-    image: goapp:1.0.0
+  accounts_backend:
+    container_name: accounts_backend
+    image: go_accounts_backend:1.0.0
     build:
-      context: ./go-server
+      context: ./accounts-backend
       dockerfile: go.dockerfile
     environment:
-      DATABASE_URL: 'postgres://postgres:postgres@accountsdb:5432/postgres?sslmode=disable'
+      DATABASE_URL: 'postgres://postgres:postgres@accounts_db:5432/postgres?sslmode=disable'
     ports:
       - '8000:8000'
     depends_on:
-      - accountsdb
-
-  springbootapp:
-    container_name: springbootapp
-    build:
-      context: ./spring-server
-      dockerfile: spring.dockerfile
-    ports:
-      - '8080:8080'
-    depends_on:
-      - chatdb
+      - accounts_db
 
 volumes:
   pgdata: {}

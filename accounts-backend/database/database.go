@@ -20,7 +20,7 @@ func InitDB() *DB {
 	}
 
 	// Create table if doesnt exist with id, username and password
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name TEXT, password TEXT)")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name TEXT UNIQUE, password TEXT)")
 	if err != nil {
 		log.Fatal(err)
 	}

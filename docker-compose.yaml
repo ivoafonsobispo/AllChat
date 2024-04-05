@@ -10,6 +10,8 @@ services:
       - 5432:5432
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: "exit 0"
 
   chat_db:
     container_name: chat_db
@@ -33,7 +35,8 @@ services:
     ports:
       - '8000:8000'
     depends_on:
-      - accounts_db
+      accounts_db:
+        condition: service_healthy
 
   chat_backend:
     container_name: chat_backend

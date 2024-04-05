@@ -56,7 +56,6 @@ function sendName() {
 }
 
 function showMessage(message) {
-    console.log('Message received:', message);
     $("#chat").append("<tr><td>" + message + "</td></tr>");
 }
 
@@ -91,7 +90,6 @@ function createAccount() {
         data: JSON.stringify({ name: username, password: password }),
         success: function (response) {
             // Handle success response
-            console.log('Account created successfully:', response);
             alert('Account created successfully!');
         },
         error: function (xhr, status, error) {
@@ -130,8 +128,7 @@ $('#loginForm').submit(function (event) {
         url: 'http://localhost:8000/api/users/login',
         contentType: 'application/json',
         data: JSON.stringify(data),
-        success: function (response) {
-            console.log('Login successful:', response);
+        success: function () {
             // Save user credentials in local storage
             localStorage.setItem('userCredentials', JSON.stringify(data));
             alert('Login successful!');

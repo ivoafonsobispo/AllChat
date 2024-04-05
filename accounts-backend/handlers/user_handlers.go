@@ -78,6 +78,18 @@ func CreateUser(db *sql.DB) http.HandlerFunc {
 		var u models.User
 		json.NewDecoder(r.Body).Decode(&u)
 
+		// Check if the username already exists
+		var usernameExists bool
+		err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE name=$1)", u.Name).Scan(&usernameExists)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if usernameExists {
+			http.Error(w, "Username already exists", http.StatusBadRequest)
+			return
+		}
+
 		// Cypher the password
 		hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 		if err != nil {

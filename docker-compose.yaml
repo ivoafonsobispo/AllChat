@@ -1,15 +1,4 @@
 services:
-  chat_db:
-    container_name: chat_db
-    image: mongo:latest
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: mongo
-      MONGO_INITDB_ROOT_PASSWORD: mongo
-    ports:
-      - 27017:27017
-    volumes:
-      - mongo-data:/var/lib/mongodb/data
-
   accounts_backend:
     container_name: accounts_backend
     image: go_accounts_backend:1.0.0
@@ -27,10 +16,10 @@ services:
     build:
       context: ./chat-backend
       dockerfile: go.dockerfile
+    environment:
+      DATABASE_URL: 'mongodb+srv://admin:admin@cluster0.vbfhlso.mongodb.net/'
     ports:
       - '8002:8002'
-    depends_on:
-      - chat_db
 
   ws_server:
     container_name: ws_server

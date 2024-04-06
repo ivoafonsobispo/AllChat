@@ -1,18 +1,4 @@
 services:
-  accounts_db:
-    container_name: accounts_db
-    image: postgres:13
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-    ports:
-      - 5432:5432
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: "exit 0"
-
   chat_db:
     container_name: chat_db
     image: mongo:latest
@@ -31,12 +17,9 @@ services:
       context: ./accounts-backend
       dockerfile: go.dockerfile
     environment:
-      DATABASE_URL: 'postgres://postgres:postgres@accounts_db:5432/postgres?sslmode=disable'
+      DATABASE_URL: 'postgres://admin:admin@35.188.190.81:5432/postgres?sslmode=disable'
     ports:
       - '8000:8000'
-    depends_on:
-      accounts_db:
-        condition: service_healthy
 
   chat_backend:
     container_name: chat_backend

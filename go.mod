@@ -3,13 +3,13 @@ module github.com/ivoafonsobispo/accounts-backend
 go 1.22.1
 
 require (
+	cloud.google.com/go/cloudsqlconn v1.8.1
 	github.com/gorilla/mux v1.8.1
-	github.com/lib/pq v1.10.9
+	github.com/jackc/pgx/v5 v5.5.5
 	golang.org/x/crypto v0.21.0
 )
 
 require (
-	cloud.google.com/go/cloudsqlconn v1.8.1 // indirect
 	cloud.google.com/go/compute v1.23.4 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -23,7 +23,6 @@ require (
 	github.com/googleapis/gax-go/v2 v2.12.2 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
-	github.com/jackc/pgx/v5 v5.5.5 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.49.0 // indirect

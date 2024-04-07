@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"net"
 	"os"
 
@@ -18,33 +17,19 @@ type DB struct {
 }
 
 func InitDB() (*sql.DB, error) {
-	mustGetenv := func(k string) string {
-		v := os.Getenv(k)
-		if v == "" {
-			log.Fatalf("Fatal Error in connect_connector.go: %s environment variable not set.\n", k)
-		}
-		return v
-	}
+	// Hardcoded environment variables
+	dbUser := "admin"
+	dbPass := "admin"
+	dbName := "accountsdb"
+	instanceConnectionName := os.Getenv("INSTANCE_CONNECTION_NAME")
 
-	var (
-		dbUser                 = mustGetenv("DB_USER")
-		dbPwd                  = mustGetenv("DB_PASS")
-		dbName                 = mustGetenv("DB_NAME")
-		instanceConnectionName = mustGetenv("INSTANCE_CONNECTION_NAME")
-		usePrivate             = os.Getenv("PRIVATE_IP")
-	)
-
-	dsn := fmt.Sprintf("user=%s password=%s database=%s", dbUser, dbPwd, dbName)
+	dsn := fmt.Sprintf("user=%s password=%s database=%s", dbUser, dbPass, dbName)
 	config, err := pgx.ParseConfig(dsn)
 	if err != nil {
 		return nil, err
 	}
 
 	var opts []cloudsqlconn.Option
-	if usePrivate != "" {
-		opts = append(opts, cloudsqlconn.WithDefaultDialOptions(cloudsqlconn.WithPrivateIP()))
-	}
-
 	d, err := cloudsqlconn.NewDialer(context.Background(), opts...)
 	if err != nil {
 		return nil, err

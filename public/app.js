@@ -1,7 +1,7 @@
 let socket;
 
 function connect() {
-    socket = new WebSocket("ws://localhost:8001/chat");
+    socket = new WebSocket("wss://ws-server-7eczmvtyfq-uc.a.run.app/chat");
 
     socket.onopen = function (event) {
         setConnected(true);

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 type DB struct {
@@ -21,24 +23,24 @@ func InitDB() *DB {
 	}
 
 	var (
-		dbUser                 = mustGetenv("DB_USER")
-		dbPwd                  = mustGetenv("DB_PASSWORD")
-		dbName                 = mustGetenv("DB_NAME")
-		instanceConnectionName = "chat-app-419508:us-central1:accountsdb"
+		dbUser         = mustGetenv("DB_USER")
+		dbPwd          = mustGetenv("DB_PASSWORD")
+		unixSocketPath = "/cloudsql/" + mustGetenv("INSTANCE_CONNECTION_NAME")
+		dbName         = mustGetenv("DB_NAME")
 	)
 
-	dbURI := fmt.Sprintf("user=%s password=%s dbname=%s host=/cloudsql/%s sslmode=disable",
-		dbUser, dbPwd, dbName, instanceConnectionName)
+	dbURI := fmt.Sprintf("user=%s password=%s database=%s host=%s",
+		dbUser, dbPwd, dbName, unixSocketPath)
 
-	db, err := sql.Open("postgres", dbURI)
+	dbPool, err := sql.Open("pgx", dbURI)
 	if err != nil {
 		log.Fatalf("sql.Open: %v", err)
 	}
 
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name TEXT UNIQUE, password TEXT)")
+	_, err = dbPool.Exec("CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name TEXT UNIQUE, password TEXT)")
 	if err != nil {
 		log.Fatalf("Failed to create table: %v", err)
 	}
 
-	return &DB{db}
+	return &DB{dbPool}
 }

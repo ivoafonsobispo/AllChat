@@ -8,6 +8,6 @@ RUN go mod download
 
 RUN go build -o bin/chat-backend ./cmd/api
 
-EXPOSE 8002
+EXPOSE 8003
 
 CMD ["./bin/chat-backend"]

@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"os"
 	"time"
 
 	"chat/server"
@@ -16,10 +15,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	uri := os.Getenv("DATABASE_URL")
-	if uri == "" {
-		log.Fatal("DATABASE_URL not set")
-	}
+	uri := "mongodb+srv://admin:admin@cluster0.vbfhlso.mongodb.net/"
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {

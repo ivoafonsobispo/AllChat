@@ -33,7 +33,7 @@ func (s *Server) Start() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Server is running!")
 	})
-	http.ListenAndServe(":8002", nil)
+	http.ListenAndServe(":8003", nil)
 }
 
 func (s *Server) Close() {

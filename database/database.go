@@ -24,7 +24,7 @@ func InitDB() *DB {
 		dbUser                 = mustGetenv("DB_USER")
 		dbPwd                  = mustGetenv("DB_PASSWORD")
 		dbName                 = mustGetenv("DB_NAME")
-		instanceConnectionName = mustGetenv("INSTANCE_CONNECTION_NAME")
+		instanceConnectionName = "chat-app-419508:us-central1:accountsdb"
 	)
 
 	dbURI := fmt.Sprintf("user=%s password=%s dbname=%s host=/cloudsql/%s sslmode=disable",

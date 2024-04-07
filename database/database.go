@@ -4,22 +4,22 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"os"
 
 	_ "github.com/lib/pq"
 )
 
 func InitDB() (*sql.DB, error) {
-	// Get the instance connection name from the environment
-	instanceConnectionName := os.Getenv("INSTANCE_CONNECTION_NAME")
-	if instanceConnectionName == "" {
-		return nil, fmt.Errorf("INSTANCE_CONNECTION_NAME not set")
-	}
+	// Hardcoded connection credentials
+	dbUser := "admin"
+	dbPassword := "admin"
+	dbName := "users"
+	instanceConnectionName := "chat-app-419508:us-central1:accountsdb"
 
-	// Create the DSN using the Cloud SQL Proxy
-	dsn := fmt.Sprintf("host=/cloudsql/%s", instanceConnectionName)
+	// Create the DSN using the hardcoded credentials
+	dsn := fmt.Sprintf("user=%s password=%s dbname=%s host=/cloudsql/%s sslmode=disable",
+		dbUser, dbPassword, dbName, instanceConnectionName)
 
-	// Connect to the database using the proxy
+	// Connect to the database using the hardcoded credentials
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return nil, err

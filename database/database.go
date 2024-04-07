@@ -17,12 +17,7 @@ func InitDB() (*sql.DB, error) {
 	}
 
 	// Create the DSN using the Cloud SQL Proxy
-	dsn := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable",
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		instanceConnectionName,
-		os.Getenv("DB_NAME"),
-	)
+	dsn := fmt.Sprintf("host=/cloudsql/%s", instanceConnectionName)
 
 	// Connect to the database using the proxy
 	db, err := sql.Open("postgres", dsn)

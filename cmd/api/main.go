@@ -30,5 +30,5 @@ func main() {
 	enhancedRouter := middlewares.EnableCORS(middlewares.JSONContentTypeMiddleware(router))
 
 	// Start Server
-	http.ListenAndServe(":8000", enhancedRouter)
+	http.ListenAndServe(":8002", enhancedRouter)
 }

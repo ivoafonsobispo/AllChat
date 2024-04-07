@@ -8,6 +8,7 @@ import (
 	"github.com/ivoafonsobispo/accounts-backend/database"
 	"github.com/ivoafonsobispo/accounts-backend/handlers"
 	"github.com/ivoafonsobispo/accounts-backend/middlewares"
+	_ "github.com/lib/pq"
 )
 
 func main() {

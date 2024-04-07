@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-
-	_ "github.com/lib/pq"
 )
 
 type DB struct {
@@ -14,30 +12,32 @@ type DB struct {
 }
 
 func InitDB() *DB {
-	// Get the instance connection name from the environment
-	instanceConnectionName := os.Getenv("INSTANCE_CONNECTION_NAME")
-	if instanceConnectionName == "" {
-		log.Fatal("INSTANCE_CONNECTION_NAME not set")
+	mustGetenv := func(k string) string {
+		v := os.Getenv(k)
+		if v == "" {
+			log.Fatalf("%s environment variable not set", k)
+		}
+		return v
 	}
 
-	// Get the database name, user, and password from the environment
-	dbName := os.Getenv("DB_NAME")
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
+	var (
+		dbUser                 = mustGetenv("DB_USER")
+		dbPwd                  = mustGetenv("DB_PASSWORD")
+		dbName                 = mustGetenv("DB_NAME")
+		instanceConnectionName = mustGetenv("INSTANCE_CONNECTION_NAME")
+	)
 
-	// Create the connection string
-	dbURI := fmt.Sprintf("user=%s password=%s dbname=%s host=/cloudsql/%s sslmode=disable", dbUser, dbPassword, dbName, instanceConnectionName)
+	dbURI := fmt.Sprintf("user=%s password=%s dbname=%s host=/cloudsql/%s sslmode=disable",
+		dbUser, dbPwd, dbName, instanceConnectionName)
 
-	// Connect to the database
 	db, err := sql.Open("postgres", dbURI)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("sql.Open: %v", err)
 	}
 
-	// Create table if it doesn't exist
 	_, err = db.Exec("CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name TEXT UNIQUE, password TEXT)")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to create table: %v", err)
 	}
 
 	return &DB{db}

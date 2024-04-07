@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	_ "github.com/jackc/pgx/v5/stdlib"
+	_ "github.com/lib/pq"
 )
 
 type DB struct {
@@ -32,7 +32,7 @@ func InitDB() *DB {
 	dbURI := fmt.Sprintf("user=%s password=%s database=%s host=%s",
 		dbUser, dbPwd, dbName, unixSocketPath)
 
-	dbPool, err := sql.Open("pgx", dbURI)
+	dbPool, err := sql.Open("postgres", dbURI)
 	if err != nil {
 		log.Fatalf("sql.Open: %v", err)
 	}

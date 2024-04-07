@@ -43,7 +43,7 @@ function sendName() {
 
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:8002/chat',
+            url: 'https://chat-backend-7eczmvtyfq-uc.a.run.app/chat',
             contentType: 'application/json',
             data: JSON.stringify({ name: message.name, content: message.content }),
             error: function (xhr, status, error) {
@@ -85,7 +85,7 @@ function createAccount() {
 
     $.ajax({
         type: 'POST',
-        url: 'http://localhost:8000/api/users',
+        url: 'https://accounts-backend-7eczmvtyfq-uc.a.run.app/api/users',
         contentType: 'application/json',
         data: JSON.stringify({ name: username, password: password }),
         success: function (response) {
@@ -125,7 +125,7 @@ $('#loginForm').submit(function (event) {
     // Send AJAX request
     $.ajax({
         type: 'POST',
-        url: 'http://localhost:8000/api/users/login',
+        url: 'https://accounts-backend-7eczmvtyfq-uc.a.run.app/api/users/login',
         contentType: 'application/json',
         data: JSON.stringify(data),
         success: function () {

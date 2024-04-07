@@ -2,35 +2,30 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
-	"os"
 
 	_ "github.com/lib/pq"
 )
 
-func InitDB() (*sql.DB, error) {
-	// Get the instance connection name from the environment
-	instanceConnectionName := os.Getenv("INSTANCE_CONNECTION_NAME")
-	if instanceConnectionName == "" {
-		return nil, fmt.Errorf("INSTANCE_CONNECTION_NAME not set")
-	}
+type DB struct {
+	*sql.DB
+}
 
-	// Create the DSN using the Cloud SQL Proxy
-	dsn := fmt.Sprintf("host=/cloudsql/%s", instanceConnectionName)
+func InitDB() *DB {
+	// Hardcoded connection string
+	dbURL := "/cloudsql/chat-app-419508:us-central1:accountsdb"
 
-	// Connect to the database using the proxy
-	db, err := sql.Open("postgres", dsn)
+	// Connect to DB using the hardcoded connection string
+	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
-	// Test the connection
-	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("unable to connect to database: %v", err)
+	// Create table if it doesn't exist with id, username, and password
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name TEXT UNIQUE, password TEXT)")
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	log.Println("Connected to Cloud SQL database")
-
-	return db, nil
+	return &DB{db}
 }

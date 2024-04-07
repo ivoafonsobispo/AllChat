@@ -1,49 +1,34 @@
 package database
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
-	"net"
+	"log"
 	"os"
-
-	"cloud.google.com/go/cloudsqlconn"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/stdlib"
 )
 
-type DB struct {
-	*sql.DB
-}
-
 func InitDB() (*sql.DB, error) {
-	// Hardcoded environment variables
-	dbUser := "admin"
-	dbPass := "admin"
-	dbName := "accountsdb"
+	// Get the instance connection name from the environment
 	instanceConnectionName := os.Getenv("INSTANCE_CONNECTION_NAME")
+	if instanceConnectionName == "" {
+		return nil, fmt.Errorf("INSTANCE_CONNECTION_NAME not set")
+	}
 
-	dsn := fmt.Sprintf("user=%s password=%s database=%s", dbUser, dbPass, dbName)
-	config, err := pgx.ParseConfig(dsn)
+	// Create the DSN using the Cloud SQL Proxy
+	dsn := fmt.Sprintf("host=/cloudsql/%s", instanceConnectionName)
+
+	// Connect to the database using the proxy
+	db, err := sql.Open("cloudsqlpostgres", dsn)
 	if err != nil {
 		return nil, err
 	}
 
-	var opts []cloudsqlconn.Option
-	d, err := cloudsqlconn.NewDialer(context.Background(), opts...)
-	if err != nil {
-		return nil, err
+	// Test the connection
+	if err := db.Ping(); err != nil {
+		return nil, fmt.Errorf("unable to connect to database: %v", err)
 	}
 
-	config.DialFunc = func(ctx context.Context, network, instance string) (net.Conn, error) {
-		return d.Dial(ctx, instanceConnectionName)
-	}
+	log.Println("Connected to Cloud SQL database")
 
-	dbURI := stdlib.RegisterConnConfig(config)
-	dbPool, err := sql.Open("pgx", dbURI)
-	if err != nil {
-		return nil, fmt.Errorf("sql.Open: %w", err)
-	}
-
-	return dbPool, nil
+	return db, nil
 }

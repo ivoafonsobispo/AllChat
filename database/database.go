@@ -40,7 +40,7 @@ func InitDB() (*sql.DB, error) {
 	}
 
 	dbURI := stdlib.RegisterConnConfig(config)
-	dbPool, err := sql.Open("pgxstd", dbURI)
+	dbPool, err := sql.Open("pgx", dbURI)
 	if err != nil {
 		return nil, fmt.Errorf("sql.Open: %w", err)
 	}

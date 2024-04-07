@@ -8,6 +8,6 @@ RUN go mod download
 
 RUN go build -o bin/accounts-backend ./cmd/api
 
-EXPOSE 8000
+EXPOSE 8002
 
 CMD ["./bin/accounts-backend"]

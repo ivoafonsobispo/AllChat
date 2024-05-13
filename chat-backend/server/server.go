@@ -14,6 +14,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+const addr = ":8002"
+
 type Server struct {
 	db      *mongo.Database
 	message *mongo.Collection
@@ -29,11 +31,24 @@ func NewServer(db *mongo.Database) *Server {
 }
 
 func (s *Server) Start() {
-	http.HandleFunc("/chat", utils.HandleCORS(http.HandlerFunc(s.handleChat)))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Server is running!")
+		_, err := fmt.Fprintf(w, "Server is running!")
+		if err != nil {
+			return
+		}
 	})
-	http.ListenAndServe(":8002", nil)
+
+	err := http.ListenAndServe(addr, nil)
+	if err != nil {
+		return
+	}
+
+	s.routes()
+}
+
+func (s *Server) routes() {
+	http.HandleFunc("/chat", utils.HandleCORS(http.HandlerFunc(s.handleBroadcastChat)))
+	http.HandleFunc("/chat/{groupId}", utils.HandleCORS(http.HandlerFunc(s.handleBroadcastChat)))
 }
 
 func (s *Server) Close() {
@@ -45,7 +60,7 @@ func (s *Server) Close() {
 	}
 }
 
-func (s *Server) handleChat(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleBroadcastChat(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return

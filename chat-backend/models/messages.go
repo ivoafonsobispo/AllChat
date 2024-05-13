@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type ReceiveMessage struct {
+type ReceivedMessage struct {
 	GroupId string  `json:"group-id"`
 	Message Message `json:"message"`
 }

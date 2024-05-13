@@ -1,4 +1,3 @@
-// server/server.go
 package server
 
 import (
@@ -48,7 +47,7 @@ func (s *Server) Start() {
 
 func (s *Server) routes() {
 	http.HandleFunc("/chat", utils.HandleCORS(http.HandlerFunc(s.handleBroadcastChat)))
-	http.HandleFunc("/chat/{groupId}", utils.HandleCORS(http.HandlerFunc(s.handleBroadcastChat)))
+	//http.HandleFunc("/chat/{groupId}", utils.HandleCORS(http.HandlerFunc(s.handleBroadcastChat)))
 }
 
 func (s *Server) Close() {
@@ -66,19 +65,20 @@ func (s *Server) handleBroadcastChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var msg models.Message
+	var msg models.ReceivedMessage
 	err := json.NewDecoder(r.Body).Decode(&msg)
 	if err != nil {
 		http.Error(w, "Error decoding message", http.StatusBadRequest)
 		return
 	}
 
-	msg.Time = time.Now()
+	msg.Message.Timestamp = time.Now()
+
 	s.saveMessage(msg)
 }
 
-func (s *Server) saveMessage(msg models.Message) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+func (s *Server) saveMessage(msg models.ReceivedMessage) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
 	_, err := s.message.InsertOne(ctx, msg)

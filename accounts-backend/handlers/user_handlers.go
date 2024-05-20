@@ -17,7 +17,7 @@ func Login(db *sql.DB) http.HandlerFunc {
 		json.NewDecoder(r.Body).Decode(&u)
 
 		var dbUser models.User
-		err := db.QueryRow("SELECT * FROM users WHERE name = $1", u.Name).Scan(&dbUser.Id, &dbUser.Name, &dbUser.Password)
+		err := db.QueryRow("SELECT * FROM users WHERE name = $1 AND deleted = FALSE", u.Name).Scan(&dbUser.Id, &dbUser.Name, &dbUser.Password)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			return
@@ -35,7 +35,7 @@ func Login(db *sql.DB) http.HandlerFunc {
 
 func GetUsers(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		rows, err := db.Query("SELECT * FROM users")
+		rows, err := db.Query("SELECT * FROM users WHERE deleted = FALSE")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -63,7 +63,7 @@ func GetUser(db *sql.DB) http.HandlerFunc {
 		id := vars["id"]
 
 		var u models.User
-		err := db.QueryRow("SELECT * FROM users WHERE id = $1", id).Scan(&u.Id, &u.Name, &u.Password)
+		err := db.QueryRow("SELECT * FROM users WHERE id = $1 AND deleted = FALSE", id).Scan(&u.Id, &u.Name, &u.Password)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			return
@@ -80,7 +80,7 @@ func CreateUser(db *sql.DB) http.HandlerFunc {
 
 		// Check if the username already exists
 		var usernameExists bool
-		err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE name=$1)", u.Name).Scan(&usernameExists)
+		err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE name=$1 AND deleted = FALSE)", u.Name).Scan(&usernameExists)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -122,14 +122,14 @@ func UpdateUser(db *sql.DB) http.HandlerFunc {
 		}
 
 		// Execute the update query
-		_, err = db.Exec("UPDATE users SET name = $1, email = $2 WHERE id = $3", u.Name, hash, id)
+		_, err = db.Exec("UPDATE users SET name = $1, email = $2 WHERE id = $3 AND deleted = FALSE", u.Name, hash, id)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		// Retrieve the updated user data from the database
 		var updatedUser models.User
-		err = db.QueryRow("SELECT id, name, email FROM users WHERE id = $1", id).Scan(&updatedUser.Id, &updatedUser.Name, &updatedUser.Password)
+		err = db.QueryRow("SELECT id, name, email FROM users WHERE id = $1 AND deleted = FALSE", id).Scan(&updatedUser.Id, &updatedUser.Name, &updatedUser.Password)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -139,7 +139,7 @@ func UpdateUser(db *sql.DB) http.HandlerFunc {
 	}
 }
 
-func DeleteUser(db *sql.DB) http.HandlerFunc {
+func HardDeleteUser(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]
@@ -151,6 +151,28 @@ func DeleteUser(db *sql.DB) http.HandlerFunc {
 			return
 		} else {
 			_, err := db.Exec("DELETE FROM users WHERE id = $1", id)
+			if err != nil {
+				//todo : fix error handling
+				w.WriteHeader(http.StatusNotFound)
+				return
+			}
+
+			json.NewEncoder(w).Encode("User deleted")
+		}
+	}
+}
+func SoftDeleteUser(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		id := vars["id"]
+
+		var u models.User
+		err := db.QueryRow("SELECT * FROM users WHERE id = $1 AND deleted = FALSE", id).Scan(&u.Id, &u.Name, &u.Password)
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		} else {
+			_, err := db.Exec("UPDATE users SET deleted = 'True' WHERE id = $1", id)
 			if err != nil {
 				//todo : fix error handling
 				w.WriteHeader(http.StatusNotFound)

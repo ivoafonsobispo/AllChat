@@ -147,3 +147,5 @@ $(function () {
     $("#send").click(() => sendName());
     $("#createAccountBtn").click(() => createAccount());
 });
+
+

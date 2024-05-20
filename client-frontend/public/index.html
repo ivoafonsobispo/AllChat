@@ -26,6 +26,11 @@
                         <button id="disconnect" class="btn btn-danger" type="submit" disabled="disabled">Disconnect
                         </button>
                     </div>
+                    <div class="form-group" style="display: flex; margin-left: auto">
+                        <button id="create_group" class="btn btn-info mr-2" type="submit">Create Group</button>
+                        <button id="send_pm" class="btn btn-info" type="submit">Send PM
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -103,6 +108,55 @@
             </div>
         </div>
     </div>
+    <div id="createGroupModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="modal-close" id="create_group_modal_close">&times;</span>
+
+            <label for="create_group_modal_users_select">Select the users:</label>
+            <div class="modal-select">
+                <select name="users" id="create_group_modal_users_select" style="width: 80%;">
+                    <option value="user1">User 1</option>
+                    <option value="user2">User 2</option>
+                </select>
+                <button class="btn modal-select-add" id="create_group_modal_select_add">+</button>
+            </div>
+
+            <div class="modal-select" style="margin-top: 5%">
+                <span style="color: #17a2b8;"><b>Selected users: &nbsp;</b></span><span id="create_group_modal_selected_users"></span>
+                <button class="btn modal-select-add" id="create_group_modal_clear" style="background: #6c757d">Clear</button>
+            </div>
+
+            <button class="btn modal-select-add modal-create-group-button" id="create_group_modal_create_group" style="width: 20%">Create Group</button>
+            <span class="error-message" id="create_group_modal_error_message" style="color: red; margin: 2% auto; display: none">You must select at least 1 user</span>
+
+        </div>
+    </div>
+    <div id="sendPMModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="modal-close" id="send_pm_modal_close">&times;</span>
+
+            <label for="send_pm_modal_users_select">Select the user:</label>
+            <div class="modal-select">
+                <select name="users" id="send_pm_modal_users_select" style="width: 80%;">
+                    <option value="user1">User 1</option>
+                    <option value="user2">User 2</option>
+                </select>
+                <button class="btn modal-select-add" id="send_pm_modal_select_add">+</button>
+            </div>
+
+            <div class="modal-select" style="margin-top: 5%">
+                <span style="color: #17a2b8;"><b>Selected user: &nbsp;</b></span><span id="send_pm_modal_selected_user"></span>
+                <button class="btn modal-select-add" id="send_pm_modal_clear" style="background: #6c757d">Clear</button>
+            </div>
+
+            <button class="btn modal-select-add modal-create-group-button" id="send_pm_modal_send_pm" style="width: 20%">Send PM</button>
+            <span class="error-message" id="send_pm_modal_error_message" style="color: red; margin: 2% auto; display: none">You must select 1 user</span>
+
+        </div>
+    </div>
+    
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
@@ -115,6 +169,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="/app.js"></script>
+    <script src="/create-group-modal.js"></script>
+    <script src="/send-pm-modal.js"></script>
 </body>
 
 </html>

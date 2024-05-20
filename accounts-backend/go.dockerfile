@@ -1,7 +1,7 @@
 FROM golang:1.22.1
 
 WORKDIR /app
-
+COPY ./sql/Scheme.sql /Scheme.sql
 COPY . .
 
 RUN go mod download

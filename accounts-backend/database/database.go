@@ -18,12 +18,17 @@ func InitDB() *DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// Create table if doesnt exist with id, username and password
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name TEXT UNIQUE, password TEXT)")
+	//open ../sql/Scheme.sql and execute it
+	// get string from sql/Scheme.sql
+	scheme, err := os.ReadFile("/Scheme.sql")
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	
+	_, err = db.Exec(string(scheme))
+	if err != nil {
+		log.Fatal(err)
+	}
+	
 	return &DB{db}
 }

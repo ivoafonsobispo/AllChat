@@ -1,4 +1,3 @@
-// server/server.go
 package server
 
 import (
@@ -13,6 +12,8 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 )
+
+const addr = ":8002"
 
 type Server struct {
 	db      *mongo.Database
@@ -29,11 +30,24 @@ func NewServer(db *mongo.Database) *Server {
 }
 
 func (s *Server) Start() {
-	http.HandleFunc("/chat", utils.HandleCORS(http.HandlerFunc(s.handleChat)))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Server is running!")
+		_, err := fmt.Fprintf(w, "Server is running!")
+		if err != nil {
+			return
+		}
 	})
-	http.ListenAndServe(":8002", nil)
+
+	err := http.ListenAndServe(addr, nil)
+	if err != nil {
+		return
+	}
+
+	s.routes()
+}
+
+func (s *Server) routes() {
+	http.HandleFunc("/chat", utils.HandleCORS(http.HandlerFunc(s.handleBroadcastChat)))
+	//http.HandleFunc("/chat/{groupId}", utils.HandleCORS(http.HandlerFunc(s.handleBroadcastChat)))
 }
 
 func (s *Server) Close() {
@@ -45,25 +59,26 @@ func (s *Server) Close() {
 	}
 }
 
-func (s *Server) handleChat(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleBroadcastChat(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
 
-	var msg models.Message
+	var msg models.ReceivedMessage
 	err := json.NewDecoder(r.Body).Decode(&msg)
 	if err != nil {
 		http.Error(w, "Error decoding message", http.StatusBadRequest)
 		return
 	}
 
-	msg.Time = time.Now()
+	msg.Message.Timestamp = time.Now()
+
 	s.saveMessage(msg)
 }
 
-func (s *Server) saveMessage(msg models.Message) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+func (s *Server) saveMessage(msg models.ReceivedMessage) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
 	_, err := s.message.InsertOne(ctx, msg)

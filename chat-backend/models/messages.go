@@ -2,8 +2,18 @@ package models
 
 import "time"
 
+type ReceivedMessage struct {
+	GroupId string  `json:"group-id"`
+	Message Message `json:"message"`
+}
+
+type RetrieveMessages struct {
+	GroupId string    `json:"group-id"`
+	Message []Message `json:"messages"`
+}
+
 type Message struct {
-	Name    string    `json:"name"`
-	Content string    `json:"content"`
-	Time    time.Time `json:"time"`
+	Content   string    `json:"content"`
+	Username  string    `json:"username"`
+	Timestamp time.Time `json:"timestamp"`
 }

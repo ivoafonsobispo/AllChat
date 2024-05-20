@@ -3,13 +3,13 @@ package models
 import "time"
 
 type ReceivedMessage struct {
-	GroupId string  `json:"group-id"`
+	GroupId string  `json:"groupid"`
 	Message Message `json:"message"`
 }
 
 type RetrieveMessages struct {
-	GroupId string    `json:"group-id"`
-	Message []Message `json:"messages"`
+	GroupId  string    `json:"groupid"`
+	Messages []Message `json:"messages"`
 }
 
 type Message struct {

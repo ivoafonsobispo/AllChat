@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
+	"strings"
 	"time"
 
 	"chat/models"
@@ -30,24 +32,24 @@ func NewServer(db *mongo.Database) *Server {
 }
 
 func (s *Server) Start() {
+	s.routes()
+
+	err := http.ListenAndServe(addr, nil)
+	if err != nil {
+		return
+	}
+}
+
+func (s *Server) routes() {
+	http.HandleFunc("/chat", utils.HandleCORS(http.HandlerFunc(s.handleBroadcastChat)))
+	http.HandleFunc("/chat/{groupId}", utils.HandleCORS(http.HandlerFunc(s.handleGetMessagesGroup)))
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		_, err := fmt.Fprintf(w, "Server is running!")
 		if err != nil {
 			return
 		}
 	})
-
-	err := http.ListenAndServe(addr, nil)
-	if err != nil {
-		return
-	}
-
-	s.routes()
-}
-
-func (s *Server) routes() {
-	http.HandleFunc("/chat", utils.HandleCORS(http.HandlerFunc(s.handleBroadcastChat)))
-	//http.HandleFunc("/chat/{groupId}", utils.HandleCORS(http.HandlerFunc(s.handleBroadcastChat)))
 }
 
 func (s *Server) Close() {
@@ -75,6 +77,31 @@ func (s *Server) handleBroadcastChat(w http.ResponseWriter, r *http.Request) {
 	msg.Message.Timestamp = time.Now()
 
 	s.saveMessage(msg)
+}
+
+func (s *Server) handleGetMessagesGroup(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Get /{groupId} from URL
+	groupId := strings.TrimPrefix(r.URL.Path, "/chat/")
+	filter := bson.D{{"groupid", groupId}}
+
+	// Get Message from DB
+	var result models.RetrieveMessages
+	err := s.message.FindOne(context.TODO(), filter).Decode(&result)
+	if err != nil {
+		http.Error(w, "Error retrieving GroupID from DB", http.StatusConflict)
+	}
+
+	// Create JSON
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(result)
+	if err != nil {
+		http.Error(w, "Error encoding JSON", http.StatusConflict)
+	}
 }
 
 func (s *Server) saveMessage(msg models.ReceivedMessage) {

@@ -1,4 +1,4 @@
-docker-compose up --buildFROM node:latest
+FROM node:latest
 
 WORKDIR /app
 

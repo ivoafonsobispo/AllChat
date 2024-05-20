@@ -23,8 +23,12 @@ func main() {
 	router.HandleFunc("/api/users/login", handlers.Login(db.DB)).Methods("POST")
 
 	router.HandleFunc("/api/users/{id}", handlers.UpdateUser(db.DB)).Methods("PUT")
+	router.HandleFunc("/api/users/{id}", handlers.SoftDeleteUser(db.DB)).Methods("PATCH")
+	router.HandleFunc("/api/users/{id}", handlers.HardDeleteUser(db.DB)).Methods("DELETE")
 
-	router.HandleFunc("/api/users/{id}", handlers.DeleteUser(db.DB)).Methods("DELETE")
+	router.HandleFunc("/api/groups", handlers.GetGroups(db.DB)).Methods("GET")
+	//router.HandleFunc("/api/groups/{id}", handlers.GetGroup(db.DB)).Methods("GET")
+	router.HandleFunc("/api/groups", handlers.CreateGroup(db.DB)).Methods("POST")
 
 	// Handle the JSON
 	enhancedRouter := middlewares.EnableCORS(middlewares.JSONContentTypeMiddleware(router))

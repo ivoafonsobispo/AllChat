@@ -2,19 +2,47 @@
     --blue: #17a2b8;
 }
 
-body {
+body, html {
     background-color: #f5f5f5;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+}
+
+.chats-list{
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    width: 20%; 
+    background-color: var(--blue);
+    overflow-y: scroll;
+    align-items: center;
+    padding: 2%;
+    border-bottom: 25px solid var(--blue);
+}
+
+.chat-list-item{
+    background-color: white;
+    height: 50px;
+    width: 100%;
+    padding: 10px;
+    cursor: pointer;
+    margin-bottom: 30px;
+}
+
+.chat-list-item:hover{
+    background-color: rgb(219, 219, 219);
 }
 
 #main-content {
-    max-width: 1080px;
-    padding: 2em 3em;
-    margin: 0 auto 20px;
+    padding: 4% 10% ;
     background-color: #fff;
-    border: 1px solid #e5e5e5;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
     border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    width: 100%;
 }
 
 /* The Modal (background) */
@@ -75,7 +103,7 @@ body {
 
 .modal-create-group-button{
     border: 1px solid;
-    background: var(--blue);
+    background: var(--blue) ;
     color: white;
     margin: 2% auto;
 }

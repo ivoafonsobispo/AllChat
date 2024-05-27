@@ -55,7 +55,7 @@ sendPMClear.onclick = function() {
     sendPMSelectedUserText.innerText = "";
 }
 
-// ----- When the user clicks in the modal "create group" button
+// ----- When the user clicks in the modal "send pm" button
 sendPMSendPM.onclick = function() {
     if (selectedUser === ""){
         sendPMErrorMessage.style.display = "flex";
@@ -63,6 +63,6 @@ sendPMSendPM.onclick = function() {
     }
 
     sendPMErrorMessage.style.display = "none";
-
+    window.location.replace("http://localhost:3000/pm/1");
     // Todo - chamar função de create group
 }

@@ -16,24 +16,41 @@
             enabled. Please enable
             Javascript and reload this page!</h2>
     </noscript>
-    <div id="main-content" class="container">
+    <div id="chats-list" class="chats-list">
+        <div class="btn chat-list-item" >PM 1</div>
+        <div class="btn chat-list-item">Group Name</div>
+        <div class="btn chat-list-item">Group Name</div>
+        <div class="btn chat-list-item">Group Name</div>
+        <div class="btn chat-list-item">Group Name</div>
+        <div class="btn chat-list-item">Group Name</div>
+        <div class="btn chat-list-item">Group Name</div>
+        <div class="btn chat-list-item">Group Name</div>
+        <div class="btn chat-list-item">Group Name</div>
+        <div class="btn chat-list-item">Group Name</div>
+        <div class="btn chat-list-item">Group Name</div>
+        <div class="btn chat-list-item">Group Name</div>
+        <div class="btn chat-list-item">Group Name</div>
+        <div class="btn chat-list-item">Group Name</div>
+    </div>
+    <div id="main-content">
         <div class="row mb-4">
             <div class="col-12">
                 <form class="form-inline">
                     <div class="form-group">
-                        <label for="connect" class="mr-2">Connection:</label>
-                        <button id="connect" class="btn btn-success mr-2" type="submit">Connect</button>
-                        <button id="disconnect" class="btn btn-danger" type="submit" disabled="disabled">Disconnect
+                        <label for="connect" class="mr-2">Receive messages ?</label>
+                        <button id="connect" class="btn btn-success mr-2" type="submit">Yes 😎</button>
+                        <button id="disconnect" class="btn btn-danger" type="submit" disabled="disabled">No 😒  
                         </button>
                     </div>
                     <div class="form-group" style="display: flex; margin-left: auto">
-                        <button id="create_group" class="btn btn-info mr-2" type="submit">Create Group</button>
-                        <button id="send_pm" class="btn btn-info" type="submit">Send PM
+                        <button id="create_group" class="btn btn-info mr-2" type="submit">Create Group 🥸</button>
+                        <button id="send_pm" class="btn btn-info" type="submit">Send PM 😶‍🌫️
                         </button>
                     </div>
                 </form>
             </div>
         </div>
+        <hr>
         <div class="row mb-4">
             <div class="col-9">
                 <form class="form-inline" id="loginForm">
@@ -85,6 +102,7 @@
                 </div>
             </div>
         </div>
+        <hr>
         <div class="row">
             <div class="col-12 mb-4">
                 <form>
@@ -169,8 +187,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="/app.js"></script>
-    <script src="/create-group-modal.js"></script>
-    <script src="/send-pm-modal.js"></script>
+    <script src="/scripts/create-group-modal.js"></script>
+    <script src="/scripts/send-pm-modal.js"></script>
 </body>
 
 </html>

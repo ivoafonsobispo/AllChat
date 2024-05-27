@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"net/http"
 	"strings"
+	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -67,6 +68,14 @@ func (s *Server) handlePostMessageGroup(w http.ResponseWriter, r *http.Request) 
 	}
 
 	var receivedMessage models.ReceivedMessage
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&receivedMessage)
+	if err != nil {
+		http.Error(w, "Error decoding JSON", http.StatusBadRequest)
+		return
+	}
+
+	receivedMessage.Message.Timestamp = time.Now()
 
 	filter := bson.M{"groupid": receivedMessage.GroupId}
 	update := bson.M{
@@ -76,10 +85,13 @@ func (s *Server) handlePostMessageGroup(w http.ResponseWriter, r *http.Request) 
 	}
 	options := options.Update().SetUpsert(true) // Create document if it doesn't exist
 
-	_, err := s.message.UpdateOne(context.Background(), filter, update, options)
+	_, err = s.message.UpdateOne(context.Background(), filter, update, options)
 	if err != nil {
 		http.Error(w, "Error adding to collection", http.StatusBadRequest)
+		return
 	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func (s *Server) handleGetMessagesGroup(w http.ResponseWriter, r *http.Request) {

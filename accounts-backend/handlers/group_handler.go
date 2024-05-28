@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"github.com/gorilla/mux"
 	"github.com/ivoafonsobispo/accounts-backend/models"
 
 )
@@ -33,6 +34,39 @@ func GetGroups(db *sql.DB) http.HandlerFunc {
 		json.NewEncoder(w).Encode(groups)
 	}
 }
+func GetUserGroups(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		id := vars["id"]
+
+		var group models.Group
+		group.Id = id
+		
+		rows, err := db.Query("SELECT r.user_id, u.name FROM rel_user_group r INNER JOIN users u ON r.user_id = u.id WHERE r.Deleted = 'False' AND r.group_id=$1", id)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "Error getting groups", http.StatusBadRequest)
+			return
+		}
+		for rows.Next() {
+			//grab names and append it to group.users
+			var user models.User
+			err := rows.Scan( &user.Name)
+			if err != nil {
+				log.Println(err)
+				http.Error(w, "Error scanning groups", http.StatusBadRequest)
+				return
+			}
+			var userName models.UserDTO
+			userName.Name = user.Name
+			group.Users = append(group.Users, userName)
+
+
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(group)
+	}
+}
 
 // router.HandleFunc("/api/groups", handlers.GetGroups(db.DB)).Methods("GET")
 func CreateGroup(db *sql.DB) http.HandlerFunc {
@@ -54,7 +88,12 @@ func CreateGroup(db *sql.DB) http.HandlerFunc {
 		}
 		//foreach user in group create a entry in rel_user_group
 		for _, user := range group.Users {
-			_, err = db.Exec("INSERT INTO rel_user_group(user_name, group_id) VALUES($1, $2)", user.Name, groupID)
+			//search the id by name
+			var user_temp models.User
+			//TODO: this is shyte, we should just search agrupated, or use id for usesrs or change postgres architecture
+			db.QueryRow("SELECT id FROM users WHERE name=$1", user.Name).Scan(&user_temp.Id)
+
+			_, err = db.Exec("INSERT INTO rel_user_group(user_id, group_id, name) VALUES($1, $2, $3)", user_temp.Id, groupID, group.Name)
 			if err != nil {
 				log.Println(err)
 				http.Error(w, "Error creating group", http.StatusBadRequest)

@@ -27,7 +27,7 @@ func main() {
 	router.HandleFunc("/api/users/{id}", handlers.HardDeleteUser(db.DB)).Methods("DELETE")
 
 	router.HandleFunc("/api/groups", handlers.GetGroups(db.DB)).Methods("GET")
-	//router.HandleFunc("/api/groups/{id}", handlers.GetGroup(db.DB)).Methods("GET")
+	router.HandleFunc("/api/groups/{id}", handlers.GetUserGroups(db.DB)).Methods("GET")
 	router.HandleFunc("/api/groups", handlers.CreateGroup(db.DB)).Methods("POST")
 
 	// Handle the JSON

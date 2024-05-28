@@ -35,7 +35,7 @@ func Login(db *sql.DB) http.HandlerFunc {
 
 func GetUsers(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		rows, err := db.Query("SELECT * FROM users WHERE deleted = FALSE")
+		rows, err := db.Query("SELECT id, name, password FROM users WHERE deleted = FALSE")
 		if err != nil {
 			log.Fatal(err)
 		}

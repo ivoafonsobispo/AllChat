@@ -51,7 +51,7 @@ func GetUserGroups(db *sql.DB) http.HandlerFunc {
 		for rows.Next() {
 			//grab names and append it to group.users
 			var user models.User
-			err := rows.Scan( &user.Name)
+			err := rows.Scan(&user.Id, &user.Name)
 			if err != nil {
 				log.Println(err)
 				http.Error(w, "Error scanning groups", http.StatusBadRequest)

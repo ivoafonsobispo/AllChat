@@ -1,4 +1,3 @@
-// server/server.go
 package server
 
 import (
@@ -13,12 +12,12 @@ import (
 )
 
 type Server struct {
-	conns map[*websocket.Conn]bool
+	conns map[string]map[*websocket.Conn]bool
 }
 
 func NewServer() *Server {
 	return &Server{
-		conns: make(map[*websocket.Conn]bool),
+		conns: make(map[string]map[*websocket.Conn]bool),
 	}
 }
 
@@ -32,11 +31,23 @@ func (s *Server) Start() {
 
 func (s *Server) handleWS(ws *websocket.Conn) {
 	fmt.Println("New incoming connect from client:", ws.RemoteAddr())
-	s.conns[ws] = true
-	s.readLoop(ws)
+
+	groupId := ws.Request().URL.Query().Get("groupId")
+
+	if _, ok := s.conns[groupId]; !ok {
+		s.conns[groupId] = make(map[*websocket.Conn]bool)
+	}
+	s.conns[groupId][ws] = true
+
+	defer func() {
+		delete(s.conns[groupId], ws)
+		ws.Close()
+	}()
+
+	s.parseMessage(ws, groupId)
 }
 
-func (s *Server) readLoop(ws *websocket.Conn) {
+func (s *Server) parseMessage(ws *websocket.Conn, groupId string) {
 	for {
 		var msg models.Message
 		err := websocket.JSON.Receive(ws, &msg)
@@ -47,14 +58,20 @@ func (s *Server) readLoop(ws *websocket.Conn) {
 			fmt.Println("Read error:", err)
 			continue
 		}
-		messageStr := fmt.Sprintf("%s: %s", msg.Name, msg.Content)
+		messageStr := fmt.Sprintf("(%s) %s: %s", msg.Timestamp, msg.Username, msg.Content)
 		messageBytes := []byte(messageStr)
-		s.broadcast(messageBytes)
+		s.sendMessageToWebsocket(messageBytes, groupId)
 	}
 }
 
-func (s *Server) broadcast(b []byte) {
-	for ws := range s.conns {
+func (s *Server) sendMessageToWebsocket(b []byte, groupId string) {
+	conns, ok := s.conns[groupId]
+	if !ok {
+		fmt.Printf("No connections found for group %s\n", groupId)
+		return
+	}
+
+	for ws := range conns {
 		go func(ws *websocket.Conn) {
 			if _, err := ws.Write(b); err != nil {
 				fmt.Println("write error:", err)

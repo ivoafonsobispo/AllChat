@@ -45,6 +45,10 @@ body, html {
     width: 100%;
 }
 
+.modal-backdrop{
+    height: auto;
+}
+
 /* The Modal (background) */
 .modal {
     display: none; /* Hidden by default */
@@ -106,4 +110,9 @@ body, html {
     background: var(--blue) ;
     color: white;
     margin: 2% auto;
+}
+
+.create-login-div {
+    background-color: #dae8ea;
+    padding: 2%; 
 }

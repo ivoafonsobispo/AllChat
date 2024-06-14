@@ -28,7 +28,42 @@ function selectedUsersContains(username){
 }
 
 // ----- When the user clicks on the button, open the modal
+async function getUsers() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: 'GET',
+            url: 'http://localhost:8000/api/users',
+            contentType: 'application/json',
+            success: function (response) {
+                console.log(response);
+                resolve(response);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error retrieving users:', error);
+                resolve(null);
+            }
+        });
+    });
+}
+
+async function displayUsers() {
+    var usersListHTML = '';
+    var users = await getUsers();
+
+    if (users != null) {
+        if (users.length == 0) {
+            createGroupSelect.innerHTML = '<option value="nousers">No more users yet 😢</option>';
+        } else {
+            users.forEach(user => {
+                usersListHTML += '<option value="' + user["username"] + '">' + user["name"] + '</option>';
+            });
+            createGroupSelect.innerHTML = usersListHTML;
+        }
+    }
+}
+
 createGroupButton.onclick = function() {
+    displayUsers();
     createGroupModal.style.display = "block";
 }
 

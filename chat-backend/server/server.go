@@ -1,6 +1,8 @@
 package server
 
 import (
+	"chat/models"
+	"chat/utils"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -9,9 +11,6 @@ import (
 	"net/http"
 	"strings"
 	"time"
-
-	"chat/models"
-	"chat/utils"
 
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -42,9 +41,8 @@ func (s *Server) Start() {
 }
 
 func (s *Server) routes() {
-	http.HandleFunc("/chat", utils.HandleCORS(http.HandlerFunc(s.handleBroadcastChat)))
 	http.HandleFunc("/chat/{groupId}", utils.HandleCORS(http.HandlerFunc(s.handleGetMessagesGroup)))
-	http.HandleFunc("/chat/message/{groupId}", utils.HandleCORS(http.HandlerFunc(s.handlePostMessageGroup)))
+	http.HandleFunc("/chat", utils.HandleCORS(http.HandlerFunc(s.handlePostMessageGroup)))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		_, err := fmt.Fprintf(w, "Server is running!")
@@ -63,24 +61,6 @@ func (s *Server) Close() {
 	}
 }
 
-func (s *Server) handleBroadcastChat(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
-	}
-
-	var msg models.ReceivedMessage
-	err := json.NewDecoder(r.Body).Decode(&msg)
-	if err != nil {
-		http.Error(w, "Error decoding message", http.StatusBadRequest)
-		return
-	}
-
-	msg.Message.Timestamp = time.Now()
-
-	s.saveMessage(msg)
-}
-
 func (s *Server) handlePostMessageGroup(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -88,6 +68,14 @@ func (s *Server) handlePostMessageGroup(w http.ResponseWriter, r *http.Request) 
 	}
 
 	var receivedMessage models.ReceivedMessage
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&receivedMessage)
+	if err != nil {
+		http.Error(w, "Error decoding JSON", http.StatusBadRequest)
+		return
+	}
+
+	receivedMessage.Message.Timestamp = time.Now()
 
 	filter := bson.M{"groupid": receivedMessage.GroupId}
 	update := bson.M{
@@ -97,10 +85,13 @@ func (s *Server) handlePostMessageGroup(w http.ResponseWriter, r *http.Request) 
 	}
 	options := options.Update().SetUpsert(true) // Create document if it doesn't exist
 
-	_, err := s.message.UpdateOne(context.Background(), filter, update, options)
+	_, err = s.message.UpdateOne(context.Background(), filter, update, options)
 	if err != nil {
 		http.Error(w, "Error adding to collection", http.StatusBadRequest)
+		return
 	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func (s *Server) handleGetMessagesGroup(w http.ResponseWriter, r *http.Request) {
@@ -125,15 +116,5 @@ func (s *Server) handleGetMessagesGroup(w http.ResponseWriter, r *http.Request) 
 	err = json.NewEncoder(w).Encode(messages)
 	if err != nil {
 		http.Error(w, "Error encoding JSON", http.StatusConflict)
-	}
-}
-
-func (s *Server) saveMessage(msg models.ReceivedMessage) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
-	_, err := s.message.InsertOne(ctx, msg)
-	if err != nil {
-		fmt.Println("Error saving message:", err)
 	}
 }

@@ -1,6 +1,9 @@
 package models
 
+import "time"
+
 type Message struct {
-	Name    string `json:"name"`
-	Content string `json:"content"`
+	Content   string    `json:"content"`
+	Username  string    `json:"username"`
+	Timestamp time.Time `json:"timestamp"`
 }

@@ -17,7 +17,7 @@ func Login(db *sql.DB) http.HandlerFunc {
 		json.NewDecoder(r.Body).Decode(&u)
 
 		var dbUser models.User
-		err := db.QueryRow("SELECT * FROM users WHERE name = $1 AND deleted = FALSE", u.Name).Scan(&dbUser.Id, &dbUser.Name, &dbUser.Password)
+		err := db.QueryRow("SELECT id, name, password FROM users WHERE name = $1 AND deleted = FALSE", u.Name).Scan(&dbUser.Id, &dbUser.Name, &dbUser.Password)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			return

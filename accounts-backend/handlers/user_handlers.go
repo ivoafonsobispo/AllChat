@@ -57,16 +57,39 @@ func GetUsers(db *sql.DB) http.HandlerFunc {
 	}
 }
 
-func GetUser(db *sql.DB) http.HandlerFunc {
+/**
+* @summary gets the user details, along with the groups the user is in
+ */
+
+func GetUserDetails(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]
 
-		var u models.User
-		err := db.QueryRow("SELECT * FROM users WHERE id = $1 AND deleted = FALSE", id).Scan(&u.Id, &u.Name, &u.Password)
+		var u models.UserDetailedDTO
+		u.Id = -1
+		rows, err := db.Query("SELECT u.id, u.name, u.password, r.group_id, r.name, r.deleted FROM users u INNER JOIN rel_user_group r ON r.user_id = u.id WHERE u.id = $1 AND u.deleted = FALSE", id)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			return
+		}
+		for rows.Next() {
+			/*if u.Id == -1 {
+				rows.Scan(&u.Id, &u.Name, &u.Deleted)
+			//TODO: bellow might be inneficient
+				}*/
+			//grab id and append it to user.groups
+			var group models.GroupDTO
+
+			err := rows.Scan(&u.Id, &u.Name, &u.Password, &group.Id, &group.Name, &group.Deleted)
+			if err != nil {
+				log.Println(err)
+				http.Error(w, "Error scanning groups", http.StatusBadRequest)
+				return
+			}
+
+			u.Groups = append(u.Groups, group)
+
 		}
 
 		json.NewEncoder(w).Encode(u)

@@ -8,5 +8,12 @@ type User struct {
 }
 
 type UserDTO struct {
-	Name     string `json:"name"`
+	Name string `json:"name"`
+}
+type UserDetailedDTO struct {
+	Id       int        `json:"id"`
+	Name     string     `json:"name"`
+	Password string     `json:"password"`
+	Deleted  bool       `json:"deleted"`
+	Groups   []GroupDTO `json:"groups"`
 }

@@ -307,3 +307,5 @@ dist
 .idea
 /chat-backend/.idea/*
 /accounts-backend/.idea/*
+
+.vscode

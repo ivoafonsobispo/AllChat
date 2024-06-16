@@ -1,21 +1,3 @@
-async function getGroups() {
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            type: 'GET',
-            url: 'http://localhost:8000/api/groups',
-            contentType: 'application/json',
-            success: function (response) {
-                console.log(response);
-                resolve(response);
-            },
-            error: function (xhr, status, error) {
-                console.error('Error retrieving groups:', error);
-                resolve(null);
-            }
-        });
-    });
-}
-
 async function displayGroups() {
     var chatsList = document.getElementById("chats-list");
     var chatsListHTML = '';

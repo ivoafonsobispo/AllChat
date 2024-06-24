@@ -49,7 +49,7 @@ func GetGroupDetails(db *sql.DB) http.HandlerFunc {
 		var group models.Group
 		group.Id = id
 		//TODO shorten this
-		rows, err := db.Query("SELECT r.user_id, u.name, g.is_pm_group, g.deleted FROM rel_user_group r INNER JOIN users u ON r.user_id = u.id INNER JOIN groups g ON g.id = r.group_id WHERE r.Deleted = 'False' AND r.group_id=$1", id)
+		rows, err := db.Query("SELECT r.user_id, u.name, r.name, r.is_pm_group FROM rel_user_group r INNER JOIN users u ON r.user_id = u.id WHERE r.Deleted = 'False' AND r.group_id=$1", id)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, "Error getting groups", http.StatusBadRequest)
@@ -59,7 +59,7 @@ func GetGroupDetails(db *sql.DB) http.HandlerFunc {
 			//grab names and append it to group.users
 			var user models.User
 			//TODO Bellow kinda sucks...
-			err := rows.Scan(&user.Id, &user.Name, &group.IsDM, &group.Deleted)
+			err := rows.Scan(&user.Id, &user.Name, &group.Name, &group.IsDM)
 			if err != nil {
 				log.Println(err)
 				http.Error(w, "Error scanning groups", http.StatusBadRequest)
@@ -103,7 +103,7 @@ func CreateGroup(db *sql.DB) http.HandlerFunc {
 			//TODO: this is shyte, we should just search agrupated, or use id for usesrs or change postgres architecture
 			db.QueryRow("SELECT id FROM users WHERE name=$1", user.Name).Scan(&user_temp.Id)
 
-			_, err = db.Exec("INSERT INTO rel_user_group(user_id, group_id, name) VALUES($1, $2, $3)", user_temp.Id, groupID, group.Name)
+			_, err = db.Exec("INSERT INTO rel_user_group(user_id, group_id, name, is_pm_group) VALUES($1, $2, $3, $4)", user_temp.Id, groupID, group.Name, group.IsDM)
 			if err != nil {
 				log.Println(err)
 				http.Error(w, "Error creating group", http.StatusBadRequest)

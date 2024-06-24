@@ -9,3 +9,10 @@ COMMIT;
 START TRANSACTION;
 ALTER TABLE groups ADD COLUMN IF NOT EXISTS is_pm_group BOOLEAN DEFAULT FALSE;
 COMMIT;
+-- Yes... i know at this point its pretty much a denormalized table chillax
+-- create an index on table groups with is_pm_group column
+START TRANSACTION;
+ALTER TABLE rel_user_group ADD COLUMN IF NOT EXISTS is_pm_group BOOLEAN DEFAULT FALSE;
+CREATE INDEX IF NOT EXISTS idx_is_pm_group ON groups(is_pm_group);
+CREATE INDEX IF NOT EXISTS idx_pm_groupid ON rel_user_group(group_id, is_pm_group);
+COMMIT;

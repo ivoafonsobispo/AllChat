@@ -68,7 +68,7 @@ func GetUserDetails(db *sql.DB) http.HandlerFunc {
 
 		var u models.UserDetailedDTO
 		u.Id = -1
-		rows, err := db.Query("SELECT u.id, u.name, u.password, r.group_id, r.name, r.deleted FROM users u INNER JOIN rel_user_group r ON r.user_id = u.id WHERE u.id = $1 AND u.deleted = FALSE", id)
+		rows, err := db.Query("SELECT u.id, u.name, u.password, r.group_id, r.is_pm_group, r.name, r.deleted FROM users u INNER JOIN rel_user_group r ON r.user_id = u.id WHERE u.id = $1 AND u.deleted = FALSE", id)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			return
@@ -81,7 +81,7 @@ func GetUserDetails(db *sql.DB) http.HandlerFunc {
 			//grab id and append it to user.groups
 			var group models.GroupDTO
 
-			err := rows.Scan(&u.Id, &u.Name, &u.Password, &group.Id, &group.Name, &group.Deleted)
+			err := rows.Scan(&u.Id, &u.Name, &u.Password, &group.Id, &group.IsDM, &group.Name, &group.Deleted)
 			if err != nil {
 				log.Println(err)
 				http.Error(w, "Error scanning groups", http.StatusBadRequest)

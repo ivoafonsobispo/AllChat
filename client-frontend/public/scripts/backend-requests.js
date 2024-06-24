@@ -121,3 +121,20 @@ async function getUserGroups(id) {
         });
     });
 }
+
+async function getGroupDetails(id) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: 'GET',
+            url: `http://localhost:8000/api/groups/${id}`,
+            contentType: 'application/json',
+            success: function (response) {
+                resolve(response);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error retrieving group details:', error);
+                resolve(null);
+            }
+        });
+    });
+}

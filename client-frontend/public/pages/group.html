@@ -14,9 +14,50 @@
             enabled. Please enable
             Javascript and reload this page!</h2>
     </noscript>
-    <div id="main-content" class="container">
-       Cool Group content here :D <br> 
-       <span id="display-id">ID:</span>
+    <div id="chats-list" class="chats-list" style="padding: 1%; color: white;">
+        <div class="row" style="width: 100%;  font-size: x-large; cursor: pointer;">
+            <a style="color: white;" href="http://localhost:3000">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                </svg>
+            </a>
+            <div style="width: 70%; margin: auto; text-align: center;">Group</div>
+        </div>
+        <div style="width: 100%; padding: 2% 2% 10% 2%">
+            <hr style="border-color: white">
+            <div style="margin-top: 5%;">
+                <b>Name:</b> <span id="group-page-group-name"></span>
+            </div>
+            <div style="margin-top: 5%;">
+                <b>Users:</b> <span id="group-page-group-users"></span>
+            </div>
+        </div>
+    </div>
+    <div id="main-content">
+        <div class="row">
+            
+            <div class="col-12">
+                <table id="conversation" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th id="broadcast-chat-title">Chat</th>
+                        </tr>
+                    </thead>
+                    <tbody class="chat-body" id="group-chat-body">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-12 mb-4">
+                <form>
+                    <div class="form-group">
+                        <label for="message" class="mr-1">Message:</label>
+                        <input type="text" id="group-message" class="form-control mr-1" placeholder="Message">
+                    </div>
+                    <button id="send-group-message" class="btn btn-primary float-right" type="submit">Send</button>
+                </form>
+            </div>
+        </div>
     </div>
     
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -31,6 +72,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="/scripts/page-get-id.js"></script>
+    <script src="/scripts/backend-requests.js"></script>
+    <script src="/scripts/mongodb-requests.js"></script>
+    <script src="/scripts/group-page-info.js" defer></script>
 </body>
 
 </html>

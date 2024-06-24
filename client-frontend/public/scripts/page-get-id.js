@@ -11,4 +11,4 @@ function getQueryParams() {
 
 // Display the ID
 const params = getQueryParams();
-document.getElementById('display-id').innerText += params.id;
+// document.getElementById('display-id').innerText += params.id;

@@ -1,5 +1,6 @@
 :root {
     --blue: #17a2b8;
+    --lightblue: #f5feff;
 }
 
 body, html {
@@ -124,4 +125,18 @@ body, html {
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+.chat-body{
+    height: 334px;
+    display: block;
+    overflow-y: scroll;
+    background-color: var(--lightblue);
+}
+
+.group-message-name-and-message{
+    display: flex;
+    flex-direction: column;
+    max-width: 75%;
+    word-break: break-all;
 }

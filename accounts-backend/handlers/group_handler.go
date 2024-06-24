@@ -5,11 +5,14 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+
 	"github.com/gorilla/mux"
 	"github.com/ivoafonsobispo/accounts-backend/models"
-
 )
-// get router.HandleFunc("/api/groups", handlers.CreateGroup(db.DB)).Methods("POST") 
+
+/**
+* @summary gets all the groups in an quick, summarized manner
+ */
 func GetGroups(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var group models.Group
@@ -34,14 +37,18 @@ func GetGroups(db *sql.DB) http.HandlerFunc {
 		json.NewEncoder(w).Encode(groups)
 	}
 }
-func GetUserGroups(db *sql.DB) http.HandlerFunc {
+
+/**
+* @summary gets the group details, along with the users in the group
+ */
+func GetGroupDetails(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]
 
 		var group models.Group
 		group.Id = id
-		
+
 		rows, err := db.Query("SELECT r.user_id, u.name FROM rel_user_group r INNER JOIN users u ON r.user_id = u.id WHERE r.Deleted = 'False' AND r.group_id=$1", id)
 		if err != nil {
 			log.Println(err)
@@ -61,14 +68,16 @@ func GetUserGroups(db *sql.DB) http.HandlerFunc {
 			userName.Name = user.Name
 			group.Users = append(group.Users, userName)
 
-
 		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(group)
 	}
 }
 
-// router.HandleFunc("/api/groups", handlers.GetGroups(db.DB)).Methods("GET")
+/*
+*
+* @summary creates a group and associates users into it if they exist
+ */
 func CreateGroup(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var group models.Group
@@ -101,13 +110,9 @@ func CreateGroup(db *sql.DB) http.HandlerFunc {
 			}
 		}
 
-
 		group.Id = groupID
-
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(group)
 	}
 }
-
-//router.HandleFunc("/api/groups/{id}", handlers.GetGroup(db.DB)).Methods("GET")

@@ -16,6 +16,10 @@ app.get('/', (req, res) => {
 app.get('/pm/:id', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'pages', 'pm.html'));
 });
+// -----  Group page
+app.get('/group/:id', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'pages', 'group.html'));
+});
 
 // Start the server
 app.listen(PORT, () => {

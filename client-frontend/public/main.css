@@ -118,3 +118,10 @@ body, html {
     background-color: #dae8ea;
     padding: 2%; 
 }
+
+.no-more-users{
+    height: inherit;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}

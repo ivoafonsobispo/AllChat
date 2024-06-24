@@ -43,7 +43,7 @@ async function getUsersForSelect() {
     }
 }
 
-async function displayUsers(users) {
+async function displayUsersCreateGroupModal(users) {
     var usersListHTML = '';
 
     users.forEach(user => {
@@ -57,12 +57,12 @@ async function displayUsers(users) {
 createGroupButton.onclick = async function() {
     var otherUsers = await getUsersForSelect(); 
     if (otherUsers == 0){
-        createGroupModalComponentWithoutUsers.style.display = "block";
+        createGroupModalComponentWithoutUsers.style.display = "flex";
         createGroupModalComponentWithUsers.style.display = "none";
     } else {
         createGroupModalComponentWithoutUsers.style.display = "none";
         createGroupModalComponentWithUsers.style.display = "inline-block";
-        displayUsers(otherUsers);
+        displayUsersCreateGroupModal(otherUsers);
     }
     createGroupModal.style.display = "block";
 }
@@ -112,7 +112,7 @@ createGroupCreateGroup.onclick = function() {
     selectedUsers.push({"name": userData.name});
 
     createGroupPost(selectedUsers);
-    displayGroups();
+    displayUserChats();
 
     closeCreateGroupModal();
 }

@@ -26,8 +26,14 @@ async function displayUserChats() {
     // TODO - filtrar se nUserNames == 2 (current user + 1) - PM
     groups.forEach(group => {
         console.log(group)
-
-        chatsListHTML += '<div class="btn chat-list-item" >' + group["name"] + '</div>';
+        const users = group["name"].split(',');
+        if(users.length == 2){
+            // PM
+            chatsListHTML += '<a class="btn chat-list-item" href="http://localhost:3000/pm/' + group["id"] +'"> PM - ' + group["name"] + '</a>';
+        } else {
+            // Group
+            chatsListHTML += '<a class="btn chat-list-item" href="http://localhost:3000/group/' + group["id"] +'"> Group - ' + group["name"] + '</a>';
+        }
     });
     chatsList.innerHTML = chatsListHTML;
 }

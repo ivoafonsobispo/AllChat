@@ -38,6 +38,95 @@ func GetGroups(db *sql.DB) http.HandlerFunc {
 	}
 }
 
+/*
+Gets all the groups related to the user and the users also realted in those groups
+
+	func GetPMGroups(db *sql.DB) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			vars := mux.Vars(r)
+			id := vars["id"]
+
+			var group models.Group
+			rows, err := db.Query("SELECT rf.group_id, rf.user_id FROM rel_user_group rf WHERE rf.group_id IN (SELECT r.group_id FROM rel_user_group r WHERE r.user_id = $1) AND rf.is_pm_group = TRUE; ", id)
+
+			if err != nil {
+				log.Println(err)
+				http.Error(w, "Error getting groups", http.StatusBadRequest)
+				return
+			}
+			//defer rows.Close()
+			for rows.Next() {
+				var user models.UserDTO
+				err := rows.Scan(&group.Id, &user.Id)
+				if err != nil {
+					log.Println(err)
+					http.Error(w, "Error scanning groups", http.StatusBadRequest)
+					return
+				}
+				group.Users = append(group.Users, models.UserDTO{Id: user.Id})
+			}
+			//now check
+
+		}
+	}
+*/
+func CheckPMGroup(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var comp models.PMScomparator
+		var id_comp int
+		var id_targ int
+		id_comp = comp.Id_comp
+		id_targ = comp.Id_targ
+
+		err := json.NewDecoder(r.Body).Decode(&comp)
+
+		var groups []models.Group
+		rows, err := db.Query("SELECT rf.group_id, rf.user_id FROM rel_user_group rf WHERE rf.group_id IN (SELECT r.group_id FROM rel_user_group r WHERE rf.user_id IN ($1, $2)) AND rf.is_pm_group = TRUE; ", id_targ, id_comp)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "Error getting groups", http.StatusBadRequest)
+			return
+		}
+		var currentGroup models.Group
+		var oldString string
+		currentGroup.Id = ""
+		for rows.Next() {
+			var tempUser models.UserDTO
+
+			rows.Scan(&oldString, &tempUser)
+			log.Println(oldString)
+			log.Println(currentGroup.Id)
+			log.Println(oldString != currentGroup.Id && currentGroup.Id != "")
+
+			if oldString != currentGroup.Id && currentGroup.Id != "" {
+
+				groups = append(groups, currentGroup)
+				//reset currentGroup
+
+				currentGroup.Users = nil
+
+			}
+			currentGroup.Id = oldString
+
+			currentGroup.Users = append(currentGroup.Users, tempUser)
+
+		}
+
+		//now check if a groups has a group
+		for _, group := range groups {
+
+			if len(group.Users) == 2 {
+
+				w.Header().Set("Content-Type", "application/json")
+				json.NewEncoder(w).Encode(group)
+				return
+			}
+		}
+		http.Error(w, "[]", http.StatusNotFound)
+		return
+	}
+}
+
 /**
 * @summary gets the group details, along with the users in the group
  */

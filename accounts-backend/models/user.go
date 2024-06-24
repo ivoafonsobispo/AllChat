@@ -8,6 +8,7 @@ type User struct {
 }
 
 type UserDTO struct {
+	Id   int    `json:"id"`
 	Name string `json:"name"`
 }
 type UserDetailedDTO struct {

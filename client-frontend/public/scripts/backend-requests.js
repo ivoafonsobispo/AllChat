@@ -45,10 +45,17 @@ function LoginPost(userData){
         url: 'http://localhost:8000/api/users/login',
         contentType: 'application/json',
         data: JSON.stringify(userData),
-        success: function () {
+        success: function (response) {
+            var userInfo = {
+                "id": response.id,
+                "name": userData.name,
+                "password": userData.password
+            };
+            console.log(userInfo);
             // Save user credentials in local storage
-            localStorage.setItem('userCredentials', JSON.stringify(userData));
+            localStorage.setItem('userInfo', JSON.stringify(userInfo));
             updateButtonsDisabled();
+            displayUserChats();
             alert('Login successful!');
 
         },
@@ -92,6 +99,23 @@ async function getGroups() {
             },
             error: function (xhr, status, error) {
                 console.error('Error retrieving groups:', error);
+                resolve(null);
+            }
+        });
+    });
+}
+
+async function getUserGroups(id) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: 'GET',
+            url: `http://localhost:8000/api/groups/${id}`,
+            contentType: 'application/json',
+            success: function (response) {
+                resolve(response);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error retrieving user groups:', error);
                 resolve(null);
             }
         });

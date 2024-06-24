@@ -2,21 +2,21 @@ function showMessageBroadcast(message) {
     $("#broadcast-chat").append("<tr><td>" + message + "</td></tr>");
 }
 
-function getUserCredentials() {
-    var storedCredentials = localStorage.getItem('userCredentials');
-    if (storedCredentials) {
-        return JSON.parse(storedCredentials);
+function getUserInfo() {
+    var storedInfo = localStorage.getItem('userInfo');
+    if (storedInfo) {
+        return JSON.parse(storedInfo);
     } else {
         return null;
     }
 }
 
 // Check if user credentials exist in local storage on page load
-var storedCredentials = getUserCredentials();
-if (storedCredentials) {
+var storedInfo = getUserInfo();
+if (storedInfo) {
     // If credentials exist, populate the login form
-    $('#name').val(storedCredentials.name);
-    $('#password').val(storedCredentials.password);
+    $('#name').val(storedInfo.name);
+    $('#password').val(storedInfo.password);
 }
 
 // login Logic
@@ -52,3 +52,4 @@ $(function () {
 });
 
 
+localStorage.clear()

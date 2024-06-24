@@ -29,10 +29,10 @@ function disconnect() {
 }
 
 function sendMessage() {
-    var storedCredentials = getUserCredentials();
+    var storedInfo = getUserInfo();
 
-    if (storedCredentials) {
-        var username = storedCredentials.name;
+    if (storedInfo) {
+        var username = storedInfo.name;
 
         var message = {
             'name': username,

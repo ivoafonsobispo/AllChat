@@ -32,7 +32,7 @@ function selectedUsersContains(name){
 // ----- When the user clicks on the button, open the modal
 async function getUsersForSelect() {
     var users = await getUsers();
-    var userData = getUserCredentials();
+    var userData = getUserInfo();
 
     users = users.filter(user => user["name"] !== userData.name);
     
@@ -108,7 +108,7 @@ createGroupCreateGroup.onclick = function() {
     createGroupErrorMessage.style.display = "none";
     
     // Add currentUser
-    var userData = getUserCredentials();
+    var userData = getUserInfo();
     selectedUsers.push({"name": userData.name});
 
     createGroupPost(selectedUsers);

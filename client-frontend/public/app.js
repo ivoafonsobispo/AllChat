@@ -55,9 +55,16 @@ $('#loginForm').submit(function (event) {
     LoginPost(data);
 });
 
+function logout(){
+    localStorage.clear()
+    updateButtonsDisabled()
+    displayUserChats()
+}
+
 $(function () {
     $("form").on('submit', (e) => e.preventDefault());
     $("#createAccountBtn").click(() => createUser());
+    $("#logoutBtn").click(() => logout())
 });
 
 updateButtonsDisabled()

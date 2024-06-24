@@ -56,7 +56,6 @@ function LoginPost(userData){
             localStorage.setItem('userInfo', JSON.stringify(userInfo));
             updateButtonsDisabled();
             displayUserChats();
-            alert('Login successful!');
 
         },
         error: function (xhr, status, error) {

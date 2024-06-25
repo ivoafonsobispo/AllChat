@@ -1,5 +1,6 @@
 :root {
     --blue: #17a2b8;
+    --lightblue: #f5feff;
 }
 
 body, html {
@@ -117,4 +118,25 @@ body, html {
 .create-login-div {
     background-color: #dae8ea;
     padding: 2%; 
+}
+
+.no-more-users{
+    height: inherit;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.chat-body{
+    height: 334px;
+    display: block;
+    overflow-y: scroll;
+    background-color: var(--lightblue);
+}
+
+.group-message-name-and-message{
+    display: flex;
+    flex-direction: column;
+    max-width: 75%;
+    word-break: break-all;
 }

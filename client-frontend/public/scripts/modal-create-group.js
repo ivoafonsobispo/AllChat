@@ -32,7 +32,7 @@ function selectedUsersContains(name){
 // ----- When the user clicks on the button, open the modal
 async function getUsersForSelect() {
     var users = await getUsers();
-    var userData = getUserCredentials();
+    var userData = getUserInfo();
 
     users = users.filter(user => user["name"] !== userData.name);
     
@@ -43,7 +43,7 @@ async function getUsersForSelect() {
     }
 }
 
-async function displayUsers(users) {
+async function displayUsersCreateGroupModal(users) {
     var usersListHTML = '';
 
     users.forEach(user => {
@@ -57,12 +57,12 @@ async function displayUsers(users) {
 createGroupButton.onclick = async function() {
     var otherUsers = await getUsersForSelect(); 
     if (otherUsers == 0){
-        createGroupModalComponentWithoutUsers.style.display = "block";
+        createGroupModalComponentWithoutUsers.style.display = "flex";
         createGroupModalComponentWithUsers.style.display = "none";
     } else {
         createGroupModalComponentWithoutUsers.style.display = "none";
         createGroupModalComponentWithUsers.style.display = "inline-block";
-        displayUsers(otherUsers);
+        displayUsersCreateGroupModal(otherUsers);
     }
     createGroupModal.style.display = "block";
 }
@@ -108,11 +108,11 @@ createGroupCreateGroup.onclick = function() {
     createGroupErrorMessage.style.display = "none";
     
     // Add currentUser
-    var userData = getUserCredentials();
+    var userData = getUserInfo();
     selectedUsers.push({"name": userData.name});
 
     createGroupPost(selectedUsers);
-    displayGroups();
+    displayUserChats();
 
     closeCreateGroupModal();
 }

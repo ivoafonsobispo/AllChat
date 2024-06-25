@@ -17,20 +17,6 @@
             Javascript and reload this page!</h2>
     </noscript>
     <div id="chats-list" class="chats-list">
-        <!-- <div class="btn chat-list-item" >PM 1</div>
-        <div class="btn chat-list-item">Group Name</div>
-        <div class="btn chat-list-item">Group Name</div>
-        <div class="btn chat-list-item">Group Name</div>
-        <div class="btn chat-list-item">Group Name</div>
-        <div class="btn chat-list-item">Group Name</div>
-        <div class="btn chat-list-item">Group Name</div>
-        <div class="btn chat-list-item">Group Name</div>
-        <div class="btn chat-list-item">Group Name</div>
-        <div class="btn chat-list-item">Group Name</div>
-        <div class="btn chat-list-item">Group Name</div>
-        <div class="btn chat-list-item">Group Name</div>
-        <div class="btn chat-list-item">Group Name</div>
-        <div class="btn chat-list-item">Group Name</div> -->
     </div>
     <div id="main-content">
         <div class="row mb-4">
@@ -63,7 +49,8 @@
                     <button id="loginBtn" class="btn btn-primary mr-1" type="submit">Login</button>
                 </form>
             </div>
-            <div class="col-3">
+            <button id="logoutBtn" class="btn btn-danger mr-1">Logout</button>
+            <div style="margin: auto;">
                 <button type="button" class="btn btn-secondary float-right" data-toggle="modal"
                     data-target="#exampleModal">
                     Create Account
@@ -110,14 +97,14 @@
                         <label for="message" class="mr-1">Message:</label>
                         <input type="text" id="message" class="form-control mr-1" placeholder="Message">
                     </div>
-                    <button id="send" class="btn btn-primary float-right" type="submit">Send</button>
+                    <button id="send-broadcast-message" class="btn btn-primary float-right" type="submit" disabled="disabled">Send</button>
                 </form>
             </div>
             <div class="col-12">
                 <table id="conversation" class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Chat</th>
+                            <th id="broadcast-chat-title">Chat - not receiving ❌</th>
                         </tr>
                     </thead>
                     <tbody id="broadcast-chat">
@@ -135,8 +122,6 @@
                 <label for="create_group_modal_users_select">Select the users:</label>
                 <div class="modal-select">
                     <select name="users" id="create_group_modal_users_select" style="width: 80%;">
-                        <option value="user1">User 1</option>
-                        <option value="user2">User 2</option>
                     </select>
                     <button class="btn modal-select-add" id="create_group_modal_select_add">+</button>
                 </div>
@@ -146,12 +131,12 @@
                     <button class="btn modal-select-add" id="create_group_modal_clear" style="background: #6c757d">Clear</button>
                 </div>
 
-                <button class="btn modal-select-add modal-create-group-button modal-select" id="create_group_modal_create_group" style="width: 20%">Create Group</button>
+                <button class="btn modal-select-add modal-create-group-button modal-select" id="create_group_modal_create_group" style="width: 20%; display: inherit; text-align: center">Create Group</button>
                 <span class="error-message" id="create_group_modal_error_message" style="color: red; margin: 2% auto; display: none">You must select at least 1 user</span>
             </div>
 
-            <div id="create-group-modal-without-users">
-                <span>No more users yet 😢</span>
+            <div id="create-group-modal-without-users" class="no-more-users">
+                <div style="margin: auto;">No more users yet 😢</div>
             </div>
             
         </div>
@@ -161,23 +146,26 @@
         <div class="modal-content">
             <span class="modal-close" id="send_pm_modal_close">&times;</span>
 
-            <label for="send_pm_modal_users_select">Select the user:</label>
-            <div class="modal-select">
-                <select name="users" id="send_pm_modal_users_select" style="width: 80%;">
-                    <option value="user1">User 1</option>
-                    <option value="user2">User 2</option>
-                </select>
-                <button class="btn modal-select-add" id="send_pm_modal_select_add">+</button>
+            <div id="send-pm-modal-with-users">
+                <label for="send_pm_modal_users_select">Select the user:</label>
+                <div class="modal-select">
+                    <select name="users" id="send_pm_modal_users_select" style="width: 80%;">
+                    </select>
+                    <button class="btn modal-select-add" id="send_pm_modal_select_add">+</button>
+                </div>
+
+                <div class="modal-select" style="margin-top: 5%">
+                    <span style="color: #17a2b8;"><b>Selected user: &nbsp;</b></span><span id="send_pm_modal_selected_user"></span>
+                    <button class="btn modal-select-add" id="send_pm_modal_clear" style="background: #6c757d">Clear</button>
+                </div>
+
+                <button class="btn modal-select-add modal-create-group-button modal-select" id="send_pm_modal_send_pm" style="width: 20%; display: inherit; text-align: center;">Send PM</button>
+                <span class="error-message" id="send_pm_modal_error_message" style="color: red; margin: 2% auto; display: none">You must select 1 user</span>
             </div>
 
-            <div class="modal-select" style="margin-top: 5%">
-                <span style="color: #17a2b8;"><b>Selected user: &nbsp;</b></span><span id="send_pm_modal_selected_user"></span>
-                <button class="btn modal-select-add" id="send_pm_modal_clear" style="background: #6c757d">Clear</button>
+            <div id="send-pm-modal-without-users" class="no-more-users">
+                <div style="margin: auto;">No more users yet 😢</div>
             </div>
-
-            <button class="btn modal-select-add modal-create-group-button" id="send_pm_modal_send_pm" style="width: 20%">Send PM</button>
-            <span class="error-message" id="send_pm_modal_error_message" style="color: red; margin: 2% auto; display: none">You must select 1 user</span>
-
         </div>
     </div>
     

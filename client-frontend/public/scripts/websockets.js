@@ -1,5 +1,7 @@
 let socket;
 
+var broadcastChatTitle = document.getElementById("broadcast-chat-title");
+
 function connect() {
     socket = new WebSocket("ws://localhost:8001/chat");
 
@@ -29,10 +31,10 @@ function disconnect() {
 }
 
 function sendMessage() {
-    var storedCredentials = getUserCredentials();
+    var storedInfo = getUserInfo();
 
-    if (storedCredentials) {
-        var username = storedCredentials.name;
+    if (storedInfo) {
+        var username = storedInfo.name;
 
         var message = {
             'name': username,
@@ -59,9 +61,11 @@ function setConnected(connected) {
     $("#connect").prop("disabled", connected);
     $("#disconnect").prop("disabled", !connected);
     if (connected) {
-        $("#conversation").show();
+        $("#broadcast-chat").show();
+        broadcastChatTitle.innerHTML = "Chat - receiving ✅";
     } else {
-        $("#conversation").hide();
+        $("#broadcast-chat").hide();
+        broadcastChatTitle.innerHTML = "Chat - not receiving ❌";
     }
     $("#chat").html("");
 }
@@ -69,5 +73,5 @@ function setConnected(connected) {
 $(function () {
     $("#connect").click(() => connect());
     $("#disconnect").click(() => disconnect());
-    $("#send").click(() => sendMessage());
+    $("#send-broadcast-message").click(() => sendMessage());
 });

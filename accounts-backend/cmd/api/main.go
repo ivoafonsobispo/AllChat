@@ -35,6 +35,9 @@ func main() {
 	router.HandleFunc("/api/groups/{id}", handlers.GetGroupDetails(db.DB)).Methods("GET")
 	router.HandleFunc("/api/groups", handlers.CreateGroup(db.DB)).Methods("POST")
 
+	router.HandleFunc("/api/pms", handlers.CheckPMGroup(db.DB)).Methods("POST")
+
+	// Initialize Clerk TODO MOVE THIS ELSEWHERE FOR CLEANER STRUCTURE
 	var apiKey string
 	apiKey = os.Getenv("CLERK_SECRET_API_KEY")
 	publicKey := os.Getenv("CLERK_PUBLIC_API_KEY")
@@ -63,9 +66,9 @@ func main() {
 	}
 
 	injectActiveSession := clerk.WithSessionV2(client)
-	router.Use(injectActiveSession)
 
-	router.HandleFunc("/api/pms", handlers.CheckPMGroup(db.DB)).Methods("POST")
+	router.Use(injectActiveSession)
+	router.Use(handlers.AuthMiddleware)
 
 	// Handle the JSON
 	enhancedRouter := middlewares.EnableCORS(middlewares.JSONContentTypeMiddleware(router))

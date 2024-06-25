@@ -16,6 +16,5 @@ type GroupDTO struct {
 }
 
 type PMScomparator struct {
-	Id_targ int `json:"id_targ"`
-	Id_comp int `json:"id_comp"`
+	Id_targ []string `json:"id_targ"`
 }

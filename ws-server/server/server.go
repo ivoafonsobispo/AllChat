@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"ws/models"
 	"ws/utils"
@@ -58,7 +59,11 @@ func (s *Server) parseMessage(ws *websocket.Conn, groupId string) {
 			fmt.Println("Read error:", err)
 			continue
 		}
-		messageStr := fmt.Sprintf("(%s) %s: %s", msg.Timestamp, msg.Username, msg.Content)
+
+		const layout = "Mon Jan 2 15:04"
+		timestamp := time.Now().Format(layout)
+
+		messageStr := fmt.Sprintf("(%s) %s: %s", timestamp, msg.Username, msg.Content)
 		messageBytes := []byte(messageStr)
 		s.sendMessageToWebsocket(messageBytes, groupId)
 	}

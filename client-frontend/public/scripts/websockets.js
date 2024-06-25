@@ -37,7 +37,7 @@ function sendMessage() {
         var username = storedInfo.name;
 
         var message = {
-            'name': username,
+            'username': username,
             'content': $('#message').val()
         };
 

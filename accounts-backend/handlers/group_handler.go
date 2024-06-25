@@ -3,8 +3,10 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/ivoafonsobispo/accounts-backend/models"
@@ -75,10 +77,23 @@ func CheckPMGroup(db *sql.DB) http.HandlerFunc {
 
 		var comp models.PMScomparator
 
-		err := json.NewDecoder(r.Body).Decode(&comp)
-
+		json.NewDecoder(r.Body).Decode(&comp)
+		//for each string in comp get the user id
+		var ids []int
+		for _, id := range comp.Id_targ {
+			var tempId int
+			db.QueryRow("SELECT id FROM users WHERE name=$1", id).Scan(&tempId)
+			log.Println(tempId)
+			ids = append(ids, tempId)
+		}
+		query, args, err := buildQuery(ids)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println(query)
+		log.Println(args)
 		var groups []models.Group
-		rows, err := db.Query("SELECT rf.group_id, rf.user_id FROM rel_user_group rf WHERE rf.group_id IN (SELECT r.group_id FROM rel_user_group r WHERE rf.user_id IN ($1, $2)) AND rf.is_pm_group = TRUE ORDER BY rf.group_id ASC ", comp.Id_comp, comp.Id_targ)
+		rows, err := db.Query(query, args...)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, "Error getting groups", http.StatusBadRequest)
@@ -116,6 +131,32 @@ func CheckPMGroup(db *sql.DB) http.HandlerFunc {
 		http.Error(w, "No group found", http.StatusBadRequest)
 		return
 	}
+}
+
+// welp no dynamic queries in go... so we have to do this
+func buildQuery(ids []int) (string, []interface{}, error) {
+	// Create the placeholders for the IDs
+	placeholders := make([]string, len(ids))
+	args := make([]interface{}, len(ids))
+	for i, id := range ids {
+		placeholders[i] = fmt.Sprintf("$%d", i+1)
+		args[i] = id
+	}
+
+	// Build the query string with the placeholders
+	query := fmt.Sprintf(`
+		SELECT rf.group_id, rf.user_id
+		FROM rel_user_group rf
+		WHERE rf.group_id IN (
+			SELECT r.group_id
+			FROM rel_user_group r
+			WHERE rf.user_id IN (%s)
+		)
+		AND rf.is_pm_group = TRUE
+		ORDER BY rf.group_id ASC
+	`, strings.Join(placeholders, ", "))
+
+	return query, args, nil
 }
 
 /**

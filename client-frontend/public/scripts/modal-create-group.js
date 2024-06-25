@@ -101,9 +101,25 @@ createGroupClear.onclick = function() {
 // ----- When the user clicks in the modal "create group" button
 createGroupCreateGroup.onclick = function() {
     if (selectedUsers.length === 0){
+        createGroupErrorMessage.innerHTML = "You must select at least 1 user"
         createGroupErrorMessage.style.display = "flex";
         return;
     }
+
+    JSON.parse(localStorage.getItem("userPMs")).forEach(pm => {
+        hasPM = true;
+        pm["users"].forEach(user => {
+            if (!selectedUsers.includes(user.name)){
+                hasPM = false;
+            }
+        });
+
+        if (hasPM){
+            createGroupErrorMessage.innerHTML = "PM already exists"
+            createGroupErrorMessage.style.display = "flex";
+            return;
+        }
+    });
 
     createGroupErrorMessage.style.display = "none";
     

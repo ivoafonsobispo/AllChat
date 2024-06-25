@@ -3,6 +3,8 @@ var groupPageGroupUsers = document.getElementById("group-page-group-users");
 
 var groupId = getQueryParams().id;
 
+let socket;
+
 function getUserInfo() {
     var storedInfo = localStorage.getItem('userInfo');
     if (storedInfo) {
@@ -14,7 +16,6 @@ function getUserInfo() {
 
 async function displayGroupInfo() {
     var groupInfo = await getGroupDetails(groupId);
-    console.log(groupInfo)
 
     var groupUsers = groupInfo["users"];
     var groupUsersNames = [];
@@ -56,6 +57,7 @@ async function displayGroupMessages() {
     var messages = messagesObject.messages;
 
     messages.forEach(message => {
+        message.timestamp = formatMessageDate(message.timestamp);
         $("#group-chat-body").append(newTableline(message));
     });
 
@@ -63,27 +65,43 @@ async function displayGroupMessages() {
     groupChatBody.scrollTop = groupChatBody.scrollHeight;
 }
 
+
 function sendMessage() {
     var message = {
         "username": getUserInfo().name,
         "content": $('#group-message').val()
     }
 
+    socket.send(JSON.stringify(message));
+
     if (message) {
         sendMessageToGroup(groupId, message);
     }
 }
 
+function formatMessageDate(isoDateString){
+    let date = new Date(isoDateString);
 
-displayGroupInfo()
-
-$(function () {
-    connect()
-    $("form").on('submit', (e) => e.preventDefault());
-    $("#send-group-message").click(() => sendMessage());
-});
-
-let socket;
+    // Define an array of weekday names
+    let weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    
+    // Define an array of month names
+    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    
+    // Get the various components of the date
+    let weekday = weekdays[date.getUTCDay()];
+    let month = months[date.getUTCMonth()];
+    let day = date.getUTCDate();
+    let hours = date.getUTCHours();
+    let minutes = date.getUTCMinutes();
+    
+    // Ensure double digits for hours and minutes
+    let formattedHours = hours.toString().padStart(2, '0');
+    let formattedMinutes = minutes.toString().padStart(2, '0');
+    
+    // Format the date string
+    return `${weekday} ${month} ${day} ${formattedHours}:${formattedMinutes}`;
+}
 
 // Websocket Config
 function connect() {
@@ -94,7 +112,22 @@ function connect() {
     };
 
     socket.onmessage = function (event) {
-        $("#group-chat-body").append(newTablelineWS(event.data));
+        
+        // Date
+        let parts = event.data.substring(1).split(") ");
+        let date = parts[0];
+
+        let nameContent = parts[1].split(": ");
+        let username = nameContent[0];
+
+        let content = nameContent[1];
+
+        message = {
+            "timestamp": date,
+            "username": username,
+            "content": content
+        }
+        $("#group-chat-body").append(newTableline(message));
     };
 
     socket.onerror = function (error) {
@@ -112,15 +145,12 @@ function disconnect() {
     }
 }
 
-function sendMessage() {
-    var message = {
-        "username": getUserInfo().name,
-        "content": $('#group-message').val()
-    }
+displayGroupInfo()
 
-    socket.send(JSON.stringify(message));
+$(function () {
+    connect()
+    $("form").on('submit', (e) => e.preventDefault());
+    $("#send-group-message").click(() => sendMessage());
+});
 
-    if (message) {
-        sendMessageToGroup(groupId, message);
-    }
-}
+

@@ -34,11 +34,9 @@ async function displayUsersSendPMModal(users) {
 sendPMButton.onclick = async function() {
     var otherUsers = await getUsersForSelect(); 
     if (otherUsers == 0){
-        console.log("no users")
         sendPMModalComponentWithoutUsers.style.display = "flex";
         sendPMModalComponentWithUsers.style.display = "none";
     } else {
-        console.log("users!")
         sendPMModalComponentWithoutUsers.style.display = "none";
         sendPMModalComponentWithUsers.style.display = "inline-block";
         displayUsersSendPMModal(otherUsers);

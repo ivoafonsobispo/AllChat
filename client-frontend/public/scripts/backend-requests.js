@@ -51,7 +51,7 @@ function LoginPost(userData){
                 "name": userData.name,
                 "password": userData.password
             };
-            console.log(userInfo);
+            
             // Save user credentials in local storage
             localStorage.setItem('userInfo', JSON.stringify(userInfo));
             updateButtonsDisabled();

@@ -30,6 +30,8 @@ func main() {
 	router.HandleFunc("/api/groups/{id}", handlers.GetGroupDetails(db.DB)).Methods("GET")
 	router.HandleFunc("/api/groups", handlers.CreateGroup(db.DB)).Methods("POST")
 
+	router.HandleFunc("/api/pms", handlers.CheckPMGroup(db.DB)).Methods("POST")
+
 	// Handle the JSON
 	enhancedRouter := middlewares.EnableCORS(middlewares.JSONContentTypeMiddleware(router))
 

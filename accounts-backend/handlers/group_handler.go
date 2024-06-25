@@ -112,8 +112,8 @@ func CheckPMGroup(db *sql.DB) http.HandlerFunc {
 				return
 			}
 		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(groups)
+		//return false
+		http.Error(w, "No group found", http.StatusBadRequest)
 		return
 	}
 }

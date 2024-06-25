@@ -83,7 +83,7 @@ func CheckPMGroup(db *sql.DB) http.HandlerFunc {
 		for _, id := range comp.Id_targ {
 			var tempId int
 			db.QueryRow("SELECT id FROM users WHERE name=$1", id).Scan(&tempId)
-			log.Println(tempId)
+
 			ids = append(ids, tempId)
 		}
 		query, args, err := buildQuery(ids)
@@ -107,7 +107,6 @@ func CheckPMGroup(db *sql.DB) http.HandlerFunc {
 			var tempUser models.UserDTO
 			rows.Scan(&oldString, &tempUser.Id)
 			if oldString != currentGroup.Id && currentGroup.Id != "" {
-				log.Println("new group" + currentGroup.Id)
 				groups = append(groups, currentGroup)
 				//reset currentGroup
 
@@ -117,18 +116,37 @@ func CheckPMGroup(db *sql.DB) http.HandlerFunc {
 			currentGroup.Id = oldString
 			currentGroup.Users = append(currentGroup.Users, tempUser)
 		}
-
-		//now check if a groups has a group
+		var valid bool
+		//Now check if groups has a group containing the exact same users
+		//TODO go could have some functional stuff for arrays?
 		for _, group := range groups {
+			if len(group.Users) == len(ids) {
+				//check if all users are in the group
+				for _, user := range group.Users {
+					//check if user is in the group
+					for _, id := range ids {
+						if user.Id == id {
+							valid = true
+							break
+						}
+					}
+					if !valid {
+						break
+					}
+				}
 
-			if len(group.Users) == 2 {
+			}
+			if valid {
 				w.Header().Set("Content-Type", "application/json")
 				json.NewEncoder(w).Encode(group)
 				return
 			}
 		}
-		//return false
-		http.Error(w, "No group found", http.StatusBadRequest)
+
+		//return a blank json object
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode("Not Found")
+
 		return
 	}
 }

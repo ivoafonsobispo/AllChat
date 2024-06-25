@@ -309,3 +309,5 @@ dist
 /accounts-backend/.idea/*
 
 .vscode
+
+accounts-backend/clerk.json

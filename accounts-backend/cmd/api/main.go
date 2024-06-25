@@ -1,17 +1,12 @@
 package main
 
 import (
-	"encoding/json"
-	"log"
 	"net/http"
-	"os"
 
-	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gorilla/mux"
 	"github.com/ivoafonsobispo/accounts-backend/database"
 	"github.com/ivoafonsobispo/accounts-backend/handlers"
 	"github.com/ivoafonsobispo/accounts-backend/middlewares"
-	"github.com/ivoafonsobispo/accounts-backend/models"
 )
 
 func main() {
@@ -38,7 +33,7 @@ func main() {
 	router.HandleFunc("/api/pms", handlers.CheckPMGroup(db.DB)).Methods("POST")
 
 	// Initialize Clerk TODO MOVE THIS ELSEWHERE FOR CLEANER STRUCTURE
-	var apiKey string
+	/*var apiKey string
 	apiKey = os.Getenv("CLERK_SECRET_API_KEY")
 	publicKey := os.Getenv("CLERK_PUBLIC_API_KEY")
 	if len(apiKey) == 0 || len(publicKey) == 0 {
@@ -69,7 +64,7 @@ func main() {
 
 	router.Use(injectActiveSession)
 	//router.Use(middlewares.AuthMiddleware)
-
+	*/
 	// Handle the JSON
 	enhancedRouter := middlewares.EnableCORS(middlewares.JSONContentTypeMiddleware(router))
 

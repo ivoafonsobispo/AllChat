@@ -7,7 +7,13 @@ type Group struct {
 	IsDM    bool      `json:"is_pm_group"`
 	Users   []UserDTO `json:"users"`
 }
-
+type FixGroup struct {
+	Id      string   `json:"id"`
+	Name    string   `json:"name"`
+	Deleted bool     `json:"deleted"`
+	IsDM    bool     `json:"is_pm_group"`
+	Users   []string `json:"users"`
+}
 type GroupDTO struct {
 	Id      string `json:"id"`
 	Name    string `json:"name"`

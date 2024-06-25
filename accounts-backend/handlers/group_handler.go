@@ -12,9 +12,45 @@ import (
 	"github.com/ivoafonsobispo/accounts-backend/models"
 )
 
+func GetGroupsAndUsers(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var groups []models.FixGroup
+
+		rows, err := db.Query("SELECT g.id, g.name, g.is_pm_group, u.name FROM groups g INNER JOIN rel_user_group r ON  g.id=r.group_id INNER JOIN users u on u.id=r.user_id WHERE g.deleted = FALSE ORDER BY g.id ASC;")
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "Error getting groups", http.StatusBadRequest)
+			return
+		}
+		defer rows.Close()
+		var currentGroup models.FixGroup
+		var oldString string
+		var oldName string
+		var oldPm bool
+		currentGroup.Id = ""
+		for rows.Next() {
+			var tempUser string
+			rows.Scan(&oldString, &oldName, &oldPm, &tempUser)
+			if oldString != currentGroup.Id && currentGroup.Id != "" {
+				groups = append(groups, currentGroup)
+
+				currentGroup.Users = nil
+
+			}
+			currentGroup.Id = oldString
+			currentGroup.Name = oldName
+			currentGroup.Deleted = false
+			currentGroup.IsDM = oldPm
+			currentGroup.Users = append(currentGroup.Users, tempUser)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(groups)
+	}
+}
+
 /**
 * @summary gets all the groups in an quick, summarized manner
- */
+
 func GetGroups(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var group models.Group
@@ -38,7 +74,7 @@ func GetGroups(db *sql.DB) http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(groups)
 	}
-}
+} */
 
 /*
 Gets all the groups related to the user and the users also realted in those groups

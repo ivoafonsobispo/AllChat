@@ -31,7 +31,7 @@ func main() {
 	router.HandleFunc("/api/users/{id}", handlers.SoftDeleteUser(db.DB)).Methods("PATCH")
 	router.HandleFunc("/api/users/{id}", handlers.HardDeleteUser(db.DB)).Methods("DELETE")
 
-	router.HandleFunc("/api/groups", handlers.GetGroups(db.DB)).Methods("GET")
+	router.HandleFunc("/api/groups", handlers.GetGroupsAndUsers(db.DB)).Methods("GET")
 	router.HandleFunc("/api/groups/{id}", handlers.GetGroupDetails(db.DB)).Methods("GET")
 	router.HandleFunc("/api/groups", handlers.CreateGroup(db.DB)).Methods("POST")
 
@@ -68,7 +68,7 @@ func main() {
 	injectActiveSession := clerk.WithSessionV2(client)
 
 	router.Use(injectActiveSession)
-	router.Use(middlewares.AuthMiddleware)
+	//router.Use(middlewares.AuthMiddleware)
 
 	// Handle the JSON
 	enhancedRouter := middlewares.EnableCORS(middlewares.JSONContentTypeMiddleware(router))

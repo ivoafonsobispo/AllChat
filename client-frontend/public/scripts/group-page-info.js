@@ -12,7 +12,7 @@ function getUserInfo() {
     }
 }
 
-async function displayGroupInfo(){
+async function displayGroupInfo() {
     var groupInfo = await getGroupDetails(groupId);
     console.log(groupInfo)
 
@@ -29,7 +29,7 @@ async function displayGroupInfo(){
     displayGroupMessages()
 }
 
-function newTableline(message){
+function newTableline(message) {
     return `<tr style='display: block;'>
                 <td style='display: flex;'> 
                     <div class="group-message-name-and-message">
@@ -41,7 +41,17 @@ function newTableline(message){
             </tr>`
 }
 
-async function displayGroupMessages(){
+function newTablelineWS(message) {
+    return `<tr style='display: block;'>
+                <td style='display: flex;'> 
+                    <div class="group-message-name-and-message">
+                        <span>${message}</span>
+                    </div>
+                </td>
+            </tr>`
+}
+
+async function displayGroupMessages() {
     var messagesObject = await getGroupMessages(groupId);
     var messages = messagesObject.messages;
 
@@ -53,13 +63,13 @@ async function displayGroupMessages(){
     groupChatBody.scrollTop = groupChatBody.scrollHeight;
 }
 
-function sendMessage(){
-    var message = { 
+function sendMessage() {
+    var message = {
         "username": getUserInfo().name,
         "content": $('#group-message').val()
     }
 
-    if(message){
+    if (message) {
         sendMessageToGroup(groupId, message);
     }
 }
@@ -68,6 +78,49 @@ function sendMessage(){
 displayGroupInfo()
 
 $(function () {
+    connect()
     $("form").on('submit', (e) => e.preventDefault());
     $("#send-group-message").click(() => sendMessage());
 });
+
+let socket;
+
+// Websocket Config
+function connect() {
+    socket = new WebSocket("ws://localhost:8001/chat?groupId=" + groupId);
+
+    socket.onopen = function (event) {
+        console.log("Connected: " + event);
+    };
+
+    socket.onmessage = function (event) {
+        $("#group-chat-body").append(newTablelineWS(event.data));
+    };
+
+    socket.onerror = function (error) {
+        console.error('Error with WebSocket', error);
+    };
+
+    socket.onclose = function (event) {
+        console.log("Disconnected");
+    };
+}
+
+function disconnect() {
+    if (socket) {
+        socket.close();
+    }
+}
+
+function sendMessage() {
+    var message = {
+        "username": getUserInfo().name,
+        "content": $('#group-message').val()
+    }
+
+    socket.send(JSON.stringify(message));
+
+    if (message) {
+        sendMessageToGroup(groupId, message);
+    }
+}

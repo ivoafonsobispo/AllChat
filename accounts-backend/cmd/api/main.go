@@ -68,7 +68,7 @@ func main() {
 	injectActiveSession := clerk.WithSessionV2(client)
 
 	router.Use(injectActiveSession)
-	router.Use(handlers.AuthMiddleware)
+	router.Use(middlewares.AuthMiddleware)
 
 	// Handle the JSON
 	enhancedRouter := middlewares.EnableCORS(middlewares.JSONContentTypeMiddleware(router))

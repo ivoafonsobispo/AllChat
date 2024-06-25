@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
 	"os"
 
@@ -9,6 +11,7 @@ import (
 	"github.com/ivoafonsobispo/accounts-backend/database"
 	"github.com/ivoafonsobispo/accounts-backend/handlers"
 	"github.com/ivoafonsobispo/accounts-backend/middlewares"
+	"github.com/ivoafonsobispo/accounts-backend/models"
 )
 
 func main() {
@@ -31,9 +34,28 @@ func main() {
 	router.HandleFunc("/api/groups", handlers.GetGroups(db.DB)).Methods("GET")
 	router.HandleFunc("/api/groups/{id}", handlers.GetGroupDetails(db.DB)).Methods("GET")
 	router.HandleFunc("/api/groups", handlers.CreateGroup(db.DB)).Methods("POST")
-	router.HandleFunc("/api/session", handlers.GetSession(db.DB)).Methods("GET")
+
 	var apiKey string
 	apiKey = os.Getenv("CLERK_SECRET_API_KEY")
+	publicKey := os.Getenv("CLERK_PUBLIC_API_KEY")
+	if len(apiKey) == 0 || len(publicKey) == 0 {
+		log.Println("Please set the CLERK_SECRET_API_KEY and CLERK_PUBLIC_API_KEY environment variables somewhere on Docker")
+		log.Println("Falling Back on config files in case of local development")
+		//Read clerk.json
+		file, err := os.Open("clerk.json")
+		if err != nil {
+			panic(err)
+		}
+		defer file.Close()
+		var apiConfig models.ClerkConfig
+		json.NewDecoder(file).Decode(&apiConfig)
+		apiKey = apiConfig.SecretKey
+		publicKey = apiConfig.PublicKey
+		if len(apiKey) == 0 || len(publicKey) == 0 {
+			panic("FAILED...Please set the CLERK_SECRET_API_KEY and CLERK_PUBLIC_API_KEY environment variables")
+		}
+		log.Println("Successfully imported 2 strings from clerk.json")
+	}
 
 	client, err := clerk.NewClient(apiKey)
 	if err != nil {

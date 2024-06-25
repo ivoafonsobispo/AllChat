@@ -19,7 +19,7 @@ func main() {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/api/users", handlers.GetUsers(db.DB)).Methods("GET")
-	router.HandleFunc("/api/users/{id}", handlers.GetUser(db.DB)).Methods("GET")
+	router.HandleFunc("/api/users/{id}", handlers.GetUserDetails(db.DB)).Methods("GET")
 
 	router.HandleFunc("/api/users", handlers.CreateUser(db.DB)).Methods("POST")
 	router.HandleFunc("/api/users/login", handlers.Login(db.DB)).Methods("POST")
@@ -29,7 +29,7 @@ func main() {
 	router.HandleFunc("/api/users/{id}", handlers.HardDeleteUser(db.DB)).Methods("DELETE")
 
 	router.HandleFunc("/api/groups", handlers.GetGroups(db.DB)).Methods("GET")
-	router.HandleFunc("/api/groups/{id}", handlers.GetUserGroups(db.DB)).Methods("GET")
+	router.HandleFunc("/api/groups/{id}", handlers.GetGroupDetails(db.DB)).Methods("GET")
 	router.HandleFunc("/api/groups", handlers.CreateGroup(db.DB)).Methods("POST")
 	router.HandleFunc("/api/session", handlers.GetSession(db.DB)).Methods("GET")
 	var apiKey string
@@ -42,6 +42,8 @@ func main() {
 
 	injectActiveSession := clerk.WithSessionV2(client)
 	router.Use(injectActiveSession)
+
+	router.HandleFunc("/api/pms", handlers.CheckPMGroup(db.DB)).Methods("POST")
 
 	// Handle the JSON
 	enhancedRouter := middlewares.EnableCORS(middlewares.JSONContentTypeMiddleware(router))

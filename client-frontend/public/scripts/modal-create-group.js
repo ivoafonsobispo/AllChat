@@ -3,6 +3,8 @@
 var selectedUsers = [];
 // ----- Get the modal component
 var createGroupModal = document.getElementById("createGroupModal");
+var createGroupModalComponentWithUsers = document.getElementById("create-group-modal-with-users");
+var createGroupModalComponentWithoutUsers = document.getElementById("create-group-modal-without-users");
 // ----- Get the button that opens the modal
 var createGroupButton = document.getElementById("create_group");
 // ----- Get the <span> element that closes the modal
@@ -20,39 +22,74 @@ var createGroupCreateGroup = document.getElementById("create_group_modal_create_
 // ----- Get the modal error message element
 var createGroupErrorMessage = document.getElementById("create_group_modal_error_message");
 
-function selectedUsersContains(username){
+function selectedUsersContains(name){
     for (var j=0; j<selectedUsers.length; j++) {
-        if (selectedUsers[j].match(username)) return true;
+        if (selectedUsers[j]["name"].match(name)) return true;
     }
     return false;
 }
 
 // ----- When the user clicks on the button, open the modal
-createGroupButton.onclick = function() {
+async function getUsersForSelect() {
+    var users = await getUsers();
+    var userData = getUserInfo();
+
+    users = users.filter(user => user["name"] !== userData.name);
+    
+    if (users.length == 0) {
+        return 0;
+    } else {
+        return users;
+    }
+}
+
+async function displayUsersCreateGroupModal(users) {
+    var usersListHTML = '';
+
+    users.forEach(user => {
+        usersListHTML += '<option value="' + user["name"] + '">' + user["name"] + '</option>';
+    });
+    createGroupSelect.innerHTML = usersListHTML;
+}
+
+
+
+createGroupButton.onclick = async function() {
+    var otherUsers = await getUsersForSelect(); 
+    if (otherUsers == 0){
+        createGroupModalComponentWithoutUsers.style.display = "flex";
+        createGroupModalComponentWithUsers.style.display = "none";
+    } else {
+        createGroupModalComponentWithoutUsers.style.display = "none";
+        createGroupModalComponentWithUsers.style.display = "inline-block";
+        displayUsersCreateGroupModal(otherUsers);
+    }
     createGroupModal.style.display = "block";
 }
 
-// ----- When the user clicks on <span> (x), close the modal
-createGroupClose.onclick = function() {
+function closeCreateGroupModal(){
     selectedUsers = [];
     createGroupModal.style.display = "none";
     createGroupSelectedUsersText.innerText = "";
 }
 
+// ----- When the user clicks on <span> (x), close the modal
+createGroupClose.onclick = function() {
+    closeCreateGroupModal();
+}
+
 // ----- When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
     if (event.target == createGroupModal) {
-        selectedUsers = [];
-        createGroupModal.style.display = "none";
-        createGroupSelectedUsersText.innerText = "";
+        closeCreateGroupModal();
     }
 }
 
 // ----- When the user clicks in the modal '+' button
 createGroupAddUser.onclick = function() {
     if (selectedUsersContains(createGroupSelect.options[createGroupSelect.selectedIndex].text)) return;
-    selectedUsers.push(createGroupSelect.options[createGroupSelect.selectedIndex].text);
-    createGroupSelectedUsersText.innerText = selectedUsers.join(", ");
+    selectedUsers.push({"name": createGroupSelect.options[createGroupSelect.selectedIndex].text});
+    createGroupSelectedUsersText.innerText = selectedUsers.map(user => user["name"]).sort().join(", ");
 }
 
 // ----- When the user clicks in the modal "clear" button
@@ -69,6 +106,13 @@ createGroupCreateGroup.onclick = function() {
     }
 
     createGroupErrorMessage.style.display = "none";
+    
+    // Add currentUser
+    var userData = getUserInfo();
+    selectedUsers.push({"name": userData.name});
 
-    // Todo - chamar função de create group
+    createGroupPost(selectedUsers);
+    displayUserChats();
+
+    closeCreateGroupModal();
 }

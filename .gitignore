@@ -308,4 +308,6 @@ dist
 /chat-backend/.idea/*
 /accounts-backend/.idea/*
 
-**/clerk.json
+.vscode
+
+accounts-backend/clerk.json

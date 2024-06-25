@@ -3,6 +3,8 @@
 var selectedUser = "";
 // ----- Get the modal component
 var sendPMModal = document.getElementById("sendPMModal");
+var sendPMModalComponentWithUsers = document.getElementById("send-pm-modal-with-users");
+var sendPMModalComponentWithoutUsers = document.getElementById("send-pm-modal-without-users");
 // ----- Get the button that opens the modal
 var sendPMButton = document.getElementById("send_pm");
 // ----- Get the <span> element that closes the modal
@@ -20,9 +22,27 @@ var sendPMSendPM = document.getElementById("send_pm_modal_send_pm");
 // ----- Get the modal error message element
 var sendPMErrorMessage = document.getElementById("send_pm_modal_error_message");
 
+async function displayUsersSendPMModal(users) {
+    var usersListHTML = '';
 
-// ----- When the user clicks on the button, open the modal
-sendPMButton.onclick = function() {
+    users.forEach(user => {
+        usersListHTML += '<option value="' + user["name"] + '">' + user["name"] + '</option>';
+    });
+    sendPMSelect.innerHTML = usersListHTML;
+}
+
+sendPMButton.onclick = async function() {
+    var otherUsers = await getUsersForSelect(); 
+    if (otherUsers == 0){
+        console.log("no users")
+        sendPMModalComponentWithoutUsers.style.display = "flex";
+        sendPMModalComponentWithUsers.style.display = "none";
+    } else {
+        console.log("users!")
+        sendPMModalComponentWithoutUsers.style.display = "none";
+        sendPMModalComponentWithUsers.style.display = "inline-block";
+        displayUsersSendPMModal(otherUsers);
+    }
     sendPMModal.style.display = "block";
 }
 
@@ -55,7 +75,7 @@ sendPMClear.onclick = function() {
     sendPMSelectedUserText.innerText = "";
 }
 
-// ----- When the user clicks in the modal "create group" button
+// ----- When the user clicks in the modal "send pm" button
 sendPMSendPM.onclick = function() {
     if (selectedUser === ""){
         sendPMErrorMessage.style.display = "flex";
@@ -63,6 +83,6 @@ sendPMSendPM.onclick = function() {
     }
 
     sendPMErrorMessage.style.display = "none";
-
+    window.location.replace("http://localhost:3000/pm/1");
     // Todo - chamar função de create group
 }

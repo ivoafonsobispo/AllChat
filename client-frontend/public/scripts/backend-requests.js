@@ -66,24 +66,32 @@ function LoginPost(userData){
 }
 
 // --- Groups
-function createGroupPost(users){
+async function createGroupPost(users){
     const names = users.map(user => user["name"]).sort();
     var groupName = names.join(", ");
+    var is_pm_group = false;
+    if (names.length == 2){
+        is_pm_group = true;
+    }
 
-    $.ajax({
-        type: 'POST',
-        url: 'http://localhost:8000/api/groups',
-        contentType: 'application/json',
-        data: JSON.stringify({ name: groupName, users: users }),
-        success: function (response) {
-            // Handle success response
-            alert('Group created successfully!');
-        },
-        error: function (xhr, status, error) {
-            // Handle error response
-            console.error('Error creating group:', error);
-            alert('Error creating group. Please try again');
-        }
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:8000/api/groups',
+            contentType: 'application/json',
+            data: JSON.stringify({ name: groupName, users: users, is_pm_group: is_pm_group }),
+            success: function (response) {
+                // Handle success response
+                displayUserChats();
+                resolve(response);
+                alert('Group created successfully!');
+            },
+            error: function (xhr, status, error) {
+                // Handle error response
+                console.error('Error creating group:', error);
+                alert('Error creating group. Please try again');
+            }
+        });
     });
 }
 
@@ -111,8 +119,6 @@ async function getUserGroups(user_id) {
             url: `http://localhost:8000/api/users/${user_id}`,
             contentType: 'application/json',
             success: function (response) {
-                console.log(response.groups)
-                
                 resolve(response.groups);
             },
             error: function (xhr, status, error) {
@@ -142,19 +148,18 @@ async function getGroupDetails(id) {
 
 async function checkIfPmExists(users){
     return new Promise((resolve, reject) => {
-        console.log(users)
         $.ajax({
             type: 'POST',
             url: 'http://localhost:8000/api/pms',
             contentType: 'application/json',
-            data: JSON.stringify({ "Id_targ": JSON.stringify(users) }),
+            data: JSON.stringify({ "Id_targ": users }),
             success: function (response) {
                 // Handle success response
-                console.log(response)
-                if (response.data.length != 0){
-                    return true
+                if (response == "Not Found"){
+                    resolve(false)
                 }
-                return false
+
+                resolve(response)
             },
             error: function (xhr, status, error) {
                 // Handle error response

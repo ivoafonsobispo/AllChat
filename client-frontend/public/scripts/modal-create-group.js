@@ -116,8 +116,8 @@ createGroupCreateGroup.onclick = async function() {
  
     var currentUser = getUserInfo()
     userNames.push(currentUser.name)
-    var pmExists = checkIfPmExists(userNames)
-    
+    var pmExists = await checkIfPmExists(userNames)
+
     if (pmExists){
         createGroupErrorMessage.innerHTML = "PM already exists"
         createGroupErrorMessage.style.display = "flex";
@@ -130,8 +130,7 @@ createGroupCreateGroup.onclick = async function() {
     var userData = getUserInfo();
     selectedUsers.push({"name": userData.name});
 
-    createGroupPost(selectedUsers);
-    displayUserChats();
+    await createGroupPost(selectedUsers);
 
     closeCreateGroupModal();
 }

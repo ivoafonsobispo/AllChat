@@ -74,13 +74,35 @@ sendPMClear.onclick = function() {
 }
 
 // ----- When the user clicks in the modal "send pm" button
-sendPMSendPM.onclick = function() {
+sendPMSendPM.onclick = async function() {
     if (selectedUser === ""){
+        sendPMErrorMessage.innerHTML = "You must select one user"
         sendPMErrorMessage.style.display = "flex";
         return;
     }
 
+    var userNames = [selectedUser] 
+    var currentUser = getUserInfo()
+    userNames.push(currentUser.name)
+
+    var pmExists = await checkIfPmExists(userNames)
+
+    if (pmExists){
+        window.location.replace(`http://localhost:3000/pm/${pmExists["id"]}`);
+        return;
+    }
+
     sendPMErrorMessage.style.display = "none";
-    window.location.replace("http://localhost:3000/pm/1");
-    // Todo - chamar função de create group
+    
+    var selectedUsers = [{"name": selectedUser}];
+    
+    // Add currentUser
+    var userData = getUserInfo();
+    selectedUsers.push({"name": userData.name});
+
+    group = await createGroupPost(selectedUsers);
+    console.log(group);
+
+    sendPMErrorMessage.style.display = "none";
+    window.location.replace(`http://localhost:3000/pm/${group.id}`);
 }

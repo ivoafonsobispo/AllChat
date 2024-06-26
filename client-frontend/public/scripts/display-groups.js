@@ -14,7 +14,6 @@ async function displayUserChats() {
 
     if (groups == null || groups.length == 0){
         chatsList.innerHTML = 'No chats yet!';
-    
         return;
     }
 

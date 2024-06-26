@@ -67,20 +67,9 @@ function LoginPost(userData){
 
 async function LoginGoogle(){
     return new Promise((resolve, reject) => {
-        $.ajax({
-            type: 'GET',
-            url: 'http://localhost:8000/auth/google',
-            contentType: 'application/json',
-            success: function (response) {
-                console.log("Google")
-                console.log(response)
-                resolve(response);
-            },
-            error: function (xhr, status, error) {
-                console.error('Error logging in with google:', error);
-                resolve(null);
-            }
-        });
+		//oauth to google 127.0.0.1:8000 redirect
+		window.location.href = "http://localhost:8000/auth/google";
+		
     });
 }
 
@@ -153,7 +142,6 @@ async function getGroupDetails(id) {
         $.ajax({
             type: 'GET',
             url: `http://localhost:8000/api/groups/${id}`,
-            contentType: 'application/json',
             success: function (response) {
                 resolve(response);
             },

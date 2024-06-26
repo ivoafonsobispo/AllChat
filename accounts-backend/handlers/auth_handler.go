@@ -3,9 +3,9 @@ package handlers
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -25,6 +25,7 @@ var userTemplate = `
 <p>ExpiresAt: {{.ExpiresAt}}</p>
 <p>RefreshToken: {{.RefreshToken}}</p>
 `
+var callb = "http://localhost:3000"
 
 func AuthCallback(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -38,9 +39,9 @@ func AuthCallback(db *sql.DB) http.HandlerFunc {
 			fmt.Fprintln(w, err)
 			return
 		}
+		log.Println(user)
 
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(user)
+		http.Redirect(w, r, callb, http.StatusTemporaryRedirect)
 
 	}
 }
@@ -48,11 +49,8 @@ func AuthCallback(db *sql.DB) http.HandlerFunc {
 // logout
 func Logout(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		provider := vars["provider"]
-
 		gothic.Logout(w, r)
-		http.Redirect(w, r, "/auth/"+provider, http.StatusTemporaryRedirect)
+		http.Redirect(w, r, callb, http.StatusTemporaryRedirect)
 	}
 }
 

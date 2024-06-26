@@ -43,6 +43,7 @@ func GetGroupsAndUsers(db *sql.DB) http.HandlerFunc {
 			currentGroup.IsDM = oldPm
 			currentGroup.Users = append(currentGroup.Users, tempUser)
 		}
+		groups = append(groups, currentGroup)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(groups)
 	}

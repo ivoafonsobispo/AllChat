@@ -68,6 +68,7 @@ func GetUserDetails(db *sql.DB) http.HandlerFunc {
 
 		var u models.UserDetailedDTO
 		u.Id = -1
+		//TODO Fix a null? issue for groups
 		rows, err := db.Query("SELECT u.id, u.name, u.password, r.group_id, r.is_pm_group, r.name, r.deleted FROM users u INNER JOIN rel_user_group r ON r.user_id = u.id WHERE u.id = $1 AND u.deleted = FALSE", id)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)

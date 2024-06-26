@@ -39,7 +39,13 @@ function updateButtonsDisabled(){
     }
 }
 
-$('#loginForm').submit(function (event) {
+function handleCredentialResponse(response) {
+    console(response)
+    const user = jwt_decode(response.credential);
+    localStorage.setItem('user', JSON.stringify(user));
+}
+
+$('#loginForm').submit(async function (event) {
     event.preventDefault(); // Prevent form submission
 
     // Get username and password values
@@ -52,8 +58,28 @@ $('#loginForm').submit(function (event) {
         password: password
     };
 
-    LoginPost(data);
+    // LoginPost(data);
+    // google.accounts.id.initialize({
+    //     client_id: procc,
+    //     callback: handleCredentialResponse
+    // });
+    // google.accounts.id.prompt();
+    var response = await LoginGoogle()
+    // console.log(response)
 });
+
+function initializeGoogleAuth(){
+    // google.accounts.id.initialize({
+    //     client_id: '1049613930159-5cgdnpd05d8p77q82015lpfltlslrlsq.apps.googleusercontent.com',
+    //     callback: handleCredentialResponse
+    // });
+    // google.accounts.id.prompt();
+
+    // google.accounts.id.renderButton(
+    //     document.getElementById('googleLoginBtn'),
+    //     { theme: 'outline', size: 'large' }  // customization attributes
+    // );
+}
 
 function logout(){
     localStorage.clear()
@@ -68,3 +94,7 @@ $(function () {
 });
 
 updateButtonsDisabled()
+
+// document.addEventListener('DOMContentLoaded', (event) => {
+//     initializeGoogleAuth();
+// });

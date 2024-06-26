@@ -65,6 +65,25 @@ function LoginPost(userData){
     });
 }
 
+async function LoginGoogle(){
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: 'GET',
+            url: 'http://localhost:8000/auth/google',
+            contentType: 'application/json',
+            success: function (response) {
+                console.log("Google")
+                console.log(response)
+                resolve(response);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error logging in with google:', error);
+                resolve(null);
+            }
+        });
+    });
+}
+
 // --- Groups
 async function createGroupPost(users){
     const names = users.map(user => user["name"]).sort();

@@ -7,7 +7,7 @@
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="/main.css" rel="stylesheet">
 
-
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
 </head>
 
 <body>
@@ -49,6 +49,7 @@
                     <button id="loginBtn" class="btn btn-primary mr-1" type="submit">Login</button>
                 </form>
             </div>
+            <!-- <div id="googleLoginBtn"></button> -->
             <button id="logoutBtn" class="btn btn-danger mr-1">Logout</button>
             <div style="margin: auto;">
                 <button type="button" class="btn btn-secondary float-right" data-toggle="modal"
@@ -90,6 +91,7 @@
             </div>
         </div>
         <hr>
+        <div id="buttonDiv"></div>
         <div class="row">
             <div class="col-12 mb-4">
                 <form>
@@ -186,6 +188,8 @@
     <script src="/scripts/backend-requests.js"></script>
     <script src="/scripts/websockets.js"></script>
     <script src="/scripts/display-groups.js" defer></script>
+    <!-- Load the Google Identity Services API -->
+    <!-- <script src="https://accounts.google.com/gsi/client" async defer onload="initializeGoogleAuth()"></script> -->
 </body>
 
 </html>

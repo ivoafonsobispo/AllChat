@@ -40,6 +40,10 @@ func AuthCallback(db *sql.DB) http.HandlerFunc {
 			return
 		}
 		log.Println(user)
+		//inject cookie with user info
+		session, _ := gothic.Store.Get(r, "user")
+		session.Values["user"] = user.Email
+		session.Save(r, w)
 
 		http.Redirect(w, r, callb, http.StatusTemporaryRedirect)
 

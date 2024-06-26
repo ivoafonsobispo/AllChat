@@ -104,14 +104,16 @@ async function getGroups() {
     });
 }
 
-async function getUserGroups(id) {
+async function getUserGroups(user_id) {
     return new Promise((resolve, reject) => {
         $.ajax({
             type: 'GET',
-            url: `http://localhost:8000/api/groups/${id}`,
+            url: `http://localhost:8000/api/users/${user_id}`,
             contentType: 'application/json',
             success: function (response) {
-                resolve(response);
+                console.log(response.groups)
+                
+                resolve(response.groups);
             },
             error: function (xhr, status, error) {
                 console.error('Error retrieving user groups:', error);
@@ -133,6 +135,30 @@ async function getGroupDetails(id) {
             error: function (xhr, status, error) {
                 console.error('Error retrieving group details:', error);
                 resolve(null);
+            }
+        });
+    });
+}
+
+async function checkIfPmExists(users){
+    return new Promise((resolve, reject) => {
+        console.log(users)
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:8000/api/pms',
+            contentType: 'application/json',
+            data: JSON.stringify({ "Id_targ": JSON.stringify(users) }),
+            success: function (response) {
+                // Handle success response
+                console.log(response)
+                if (response.data.length != 0){
+                    return true
+                }
+                return false
+            },
+            error: function (xhr, status, error) {
+                // Handle error response
+                console.error('Error checking pm', error);
             }
         });
     });

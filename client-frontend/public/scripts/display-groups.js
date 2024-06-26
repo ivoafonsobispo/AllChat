@@ -10,28 +10,17 @@ async function displayUserChats() {
         return;
     }
 
-    // var groups = await getUserGroups(currentUser.id);
-    var groups = await getGroups();
-    var pms = []
+    var groups = await getUserGroups(currentUser.id);
 
-    if (groups == null){
-        chatsList.innerHTML = 'Something went wrong';
-        return;
-    }
-
-    if (groups.length == 0){
+    if (groups == null || groups.length == 0){
         chatsList.innerHTML = 'No chats yet!';
-        
-        localStorage.setItem("userPMs", JSON.stringify(pms));
+    
         return;
     }
 
-    // TODO - filtrar se nUserNames == 2 (current user + 1) - PM
     groups.forEach(group => {
-        const users = group["name"].split(',');
-        if(users.length == 2){
+        if(group["is_pm_group"]){
             // PM
-            pms.push({"id": group["id"], "name": group["name"], "users": group["users"]})
             chatsListHTML += '<a class="btn chat-list-item" href="http://localhost:3000/pm/' + group["id"] +'"> PM - ' + group["name"] + '</a>';
         } else {
             // Group
@@ -39,8 +28,6 @@ async function displayUserChats() {
         }
     });
     chatsList.innerHTML = chatsListHTML;
-
-    localStorage.setItem("userPMs", JSON.stringify(pms));
 
 }
 

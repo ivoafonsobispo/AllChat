@@ -22,6 +22,7 @@ var createGroupCreateGroup = document.getElementById("create_group_modal_create_
 // ----- Get the modal error message element
 var createGroupErrorMessage = document.getElementById("create_group_modal_error_message");
 
+
 function selectedUsersContains(name){
     for (var j=0; j<selectedUsers.length; j++) {
         if (selectedUsers[j]["name"].match(name)) return true;
@@ -56,6 +57,7 @@ async function displayUsersCreateGroupModal(users) {
 
 createGroupButton.onclick = async function() {
     var otherUsers = await getUsersForSelect(); 
+    
     if (otherUsers == 0){
         createGroupModalComponentWithoutUsers.style.display = "flex";
         createGroupModalComponentWithUsers.style.display = "none";
@@ -99,27 +101,28 @@ createGroupClear.onclick = function() {
 }
 
 // ----- When the user clicks in the modal "create group" button
-createGroupCreateGroup.onclick = function() {
+createGroupCreateGroup.onclick = async function() {
     if (selectedUsers.length === 0){
         createGroupErrorMessage.innerHTML = "You must select at least 1 user"
         createGroupErrorMessage.style.display = "flex";
         return;
     }
 
-    JSON.parse(localStorage.getItem("userPMs")).forEach(pm => {
-        hasPM = true;
-        pm["users"].forEach(user => {
-            if (!selectedUsers.includes(user.name)){
-                hasPM = false;
-            }
-        });
+    var userNames = []
 
-        if (hasPM){
-            createGroupErrorMessage.innerHTML = "PM already exists"
-            createGroupErrorMessage.style.display = "flex";
-            return;
-        }
+    selectedUsers.forEach(user => {
+        userNames.push(user.name)
     });
+ 
+    var currentUser = getUserInfo()
+    userNames.push(currentUser.name)
+    var pmExists = checkIfPmExists(userNames)
+    
+    if (pmExists){
+        createGroupErrorMessage.innerHTML = "PM already exists"
+        createGroupErrorMessage.style.display = "flex";
+        return;
+    }
 
     createGroupErrorMessage.style.display = "none";
     

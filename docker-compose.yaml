@@ -32,6 +32,8 @@ services:
       dockerfile: go.dockerfile
     environment:
       DATABASE_URL: 'postgres://postgres:postgres@accounts_db:5432/postgres?sslmode=disable'
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
     ports:
       - '8000:8000'
     depends_on:

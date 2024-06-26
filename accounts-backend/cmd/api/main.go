@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/ivoafonsobispo/accounts-backend/auth"
 	"github.com/ivoafonsobispo/accounts-backend/database"
 	"github.com/ivoafonsobispo/accounts-backend/handlers"
 	"github.com/ivoafonsobispo/accounts-backend/middlewares"
@@ -12,10 +13,10 @@ import (
 func main() {
 	// Initialize database
 	db := database.InitDB()
+	auth.NewAuth()
 
 	// Create a Router
 	router := mux.NewRouter()
-
 	router.HandleFunc("/api/users", handlers.GetUsers(db.DB)).Methods("GET")
 	router.HandleFunc("/api/users/{id}", handlers.GetUserDetails(db.DB)).Methods("GET")
 
@@ -31,6 +32,9 @@ func main() {
 	router.HandleFunc("/api/groups", handlers.CreateGroup(db.DB)).Methods("POST")
 
 	router.HandleFunc("/api/pms", handlers.CheckPMGroup(db.DB)).Methods("POST")
+	router.HandleFunc("/auth/{provider}/callback", handlers.AuthCallback(db.DB)).Methods("GET")
+	router.HandleFunc("/auth/{provider}", handlers.EntryPoint(db.DB)).Methods("GET")
+	router.HandleFunc("/logout/{provider}", handlers.Logout(db.DB)).Methods("GET")
 
 	// Initialize Clerk TODO MOVE THIS ELSEWHERE FOR CLEANER STRUCTURE
 	/*var apiKey string
@@ -65,6 +69,7 @@ func main() {
 	router.Use(injectActiveSession)
 	//router.Use(middlewares.AuthMiddleware)
 	*/
+
 	// Handle the JSON
 	enhancedRouter := middlewares.EnableCORS(middlewares.JSONContentTypeMiddleware(router))
 

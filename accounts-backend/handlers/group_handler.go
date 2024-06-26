@@ -43,7 +43,10 @@ func GetGroupsAndUsers(db *sql.DB) http.HandlerFunc {
 			currentGroup.IsDM = oldPm
 			currentGroup.Users = append(currentGroup.Users, tempUser)
 		}
-		groups = append(groups, currentGroup)
+		//Check if the last group is not empty
+		if currentGroup.Id != "" {
+			groups = append(groups, currentGroup)
+		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(groups)
 	}
@@ -153,14 +156,23 @@ func CheckPMGroup(db *sql.DB) http.HandlerFunc {
 			currentGroup.Id = oldString
 			currentGroup.Users = append(currentGroup.Users, tempUser)
 		}
-		var valid bool
+		//Check if the last group is not empty
+		if currentGroup.Id != "" {
+			groups = append(groups, currentGroup)
+		}
+		var valid bool = false
 		//Now check if groups has a group containing the exact same users
 		//TODO go could have some functional stuff for arrays?
 		for _, group := range groups {
-			if len(group.Users) == len(ids) {
-				//check if all users are in the group
+
+			if len(group.Users) == len(comp.Id_targ) {
+				log.Println(group.Users)
+				log.Println(comp.Id_targ)
+				//check if all users are in the gro
+
 				for _, user := range group.Users {
 					//check if user is in the group
+					valid = false
 					for _, id := range ids {
 						if user.Id == id {
 							valid = true
@@ -171,19 +183,19 @@ func CheckPMGroup(db *sql.DB) http.HandlerFunc {
 						break
 					}
 				}
+				if valid {
+					w.Header().Set("Content-Type", "application/json")
+					json.NewEncoder(w).Encode(group)
+					return
+				}
 
 			}
-			if valid {
-				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(group)
-				return
-			}
+
 		}
 
 		//return a blank json object
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode("Not Found")
-
 		return
 	}
 }
@@ -205,7 +217,7 @@ func buildQuery(ids []int) (string, []interface{}, error) {
 		WHERE rf.group_id IN (
 			SELECT r.group_id
 			FROM rel_user_group r
-			WHERE rf.user_id IN (%s)
+			WHERE r.user_id IN (%s)
 		)
 		AND rf.is_pm_group = TRUE
 		ORDER BY rf.group_id ASC
@@ -223,7 +235,7 @@ func GetGroupDetails(db *sql.DB) http.HandlerFunc {
 		id := vars["id"]
 
 		var group models.Group
-		group.Id = id
+		group.Id = ""
 		//TODO shorten this
 		rows, err := db.Query("SELECT r.user_id, u.name, r.name, r.is_pm_group FROM rel_user_group r INNER JOIN users u ON r.user_id = u.id WHERE r.Deleted = 'False' AND r.group_id=$1", id)
 		if err != nil {
@@ -231,7 +243,10 @@ func GetGroupDetails(db *sql.DB) http.HandlerFunc {
 			http.Error(w, "Error getting groups", http.StatusBadRequest)
 			return
 		}
+
 		for rows.Next() {
+			//TODO this should be above
+			group.Id = id
 			//grab names and append it to group.users
 			var user models.User
 			//TODO Bellow kinda sucks...
@@ -246,6 +261,12 @@ func GetGroupDetails(db *sql.DB) http.HandlerFunc {
 			group.Users = append(group.Users, userName)
 
 		}
+		//if group is empty return 404
+		if group.Id == "" {
+			http.Error(w, "Group not found", http.StatusNotFound)
+			return
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(group)
 	}

@@ -166,7 +166,9 @@ func CheckPMGroup(db *sql.DB) http.HandlerFunc {
 		for _, group := range groups {
 
 			if len(group.Users) == len(comp.Id_targ) {
-				//check if all users are in the group
+				log.Println(group.Users)
+				log.Println(comp.Id_targ)
+				//check if all users are in the gro
 
 				for _, user := range group.Users {
 					//check if user is in the group
@@ -181,15 +183,14 @@ func CheckPMGroup(db *sql.DB) http.HandlerFunc {
 						break
 					}
 				}
+				if valid {
+					w.Header().Set("Content-Type", "application/json")
+					json.NewEncoder(w).Encode(group)
+					return
+				}
 
-			} else {
-				valid = false
 			}
-			if valid {
-				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(group)
-				return
-			}
+
 		}
 
 		//return a blank json object
@@ -216,7 +217,7 @@ func buildQuery(ids []int) (string, []interface{}, error) {
 		WHERE rf.group_id IN (
 			SELECT r.group_id
 			FROM rel_user_group r
-			WHERE rf.user_id IN (%s)
+			WHERE r.user_id IN (%s)
 		)
 		AND rf.is_pm_group = TRUE
 		ORDER BY rf.group_id ASC

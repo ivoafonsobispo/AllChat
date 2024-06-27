@@ -24,7 +24,14 @@ function fetchEnvs(){
 	})
 }
 async function connect() {
-	fetchEnvs()
+	$.get('/env/KEY').done(function (data) {
+		console.log(data)
+		console.log(data.KEY)
+		Key = data.KEY;
+		BACKEND_URL = data.BACKEND_URL;
+		CHAT_BACKEND_URL = data.CHAT_BACKEND_URL
+		
+	});
 	console.log("HERE");
 	console.log(localStorage.getItem('WEBSOCKETS_URL'))
     socket = new WebSocket(localStorage.getItem('WEBSOCKETS_URL')+"/chat");

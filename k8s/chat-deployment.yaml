@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-deployment
+  labels:
+    app: chat
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: chat
+  template:
+    metadata:
+      labels:
+        app: chat
+    spec:
+      containers:
+      - name: chat
+        image: imeguras/allchatchatbackend:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8002
+        env:
+        - name: DATABASE_URL
+          value: 'mongodb+srv://admin:admin@cluster0.vbfhlso.mongodb.net/'

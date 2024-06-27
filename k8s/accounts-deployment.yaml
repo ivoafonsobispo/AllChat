@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: accounts-deployment
+  labels:
+    app: accounts
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: accounts
+  template:
+    metadata:
+      labels:
+        app: accounts
+    spec:
+      containers:
+      - name: accounts
+        image: imeguras/allchataccounts:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          value: 'postgres://admin:admin@35.239.202.252:5432/postgres?sslmode=disable'
+        - name: DB_USER
+          value: admin
+        - name: DB_PASSWORD
+          value: admin
+        - name: DB_NAME
+          value: postgres

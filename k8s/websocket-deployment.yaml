@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: websocket-deployment
+  labels:
+    app: websocket
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: websocket
+  template:
+    metadata:
+      labels:
+        app: websocket
+    spec:
+      containers:
+      - name: websocket
+        image: imeguras/allchatwsserver:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8001

@@ -43,7 +43,9 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       BACKEND_URL: 'http://localhost:8000'
-      REMOTE_WEBSOCKET: 'http://localhost:8002'
+      WEBSOCKETS_URL: 'ws://localhost:8001'
+      CHAT_BACKEND_URL: 'http://localhost:8002'
+      
     ports:
       - '3000:3000'
 

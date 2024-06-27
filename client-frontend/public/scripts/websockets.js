@@ -1,18 +1,33 @@
 let socket;
-var REMOTE_WEBSOCKET = localStorage.getItem('REMOTE_WEBSOCKET');
+var WEBSOCKETS_URL = localStorage.getItem('WEBSOCKETS_URL');
+var CHAT_BACKEND_URL = localStorage.getItem('CHAT_BACKEND_URL');
 var broadcastChatTitle = document.getElementById("broadcast-chat-title");
+function fetchEnvs(){
+	return new Promise((resolve, reject) => {
+        $.ajax({
+            type: 'GET',
+            url: '/env/KEY',
+            contentType: 'application/json',
+            success: function (response) {
+                CHAT_BACKEND_URL = response.CHAT_BACKEND_URL;
+				WEBSOCKETS_URL = response.WEBSOCKETS_URL;
+				console.log(response)
 
-function connect() {
-	//TODO this should be async but oh well
-	$.ajax({
-		type: 'GET',
-		url: 'http://localhost:3000/env/KEY',
-		content
-	}).done(function(data){
-		REMOTE_WEBSOCKET = data.REMOTE_WEBSOCKET;
-		localStorage.setItem('REMOTE_WEBSOCKET', REMOTE_WEBSOCKET);
-	});	
-    socket = new WebSocket("ws://localhost:8001/chat");
+				localStorage.setItem('CHAT_BACKEND_URL', CHAT_BACKEND_URL);
+				localStorage.setItem('WEBSOCKETS_URL', WEBSOCKETS_URL);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error retrieving groups:', error);
+                resolve(null);//TODO this should be async but oh well
+			}
+		});
+	})
+}
+async function connect() {
+	fetchEnvs()
+	console.log("HERE");
+	console.log(localStorage.getItem('WEBSOCKETS_URL'))
+    socket = new WebSocket(localStorage.getItem('WEBSOCKETS_URL')+"/chat");
 
     socket.onopen = function (event) {
         setConnected(true);
@@ -42,7 +57,7 @@ function disconnect() {
 }
 
 function sendMessage() {
-	console.log(REMOTE_WEBSOCKET)
+	console.log(CHAT_BACKEND_URL)
 
     var storedInfo = getUserInfo();
 
@@ -58,7 +73,7 @@ function sendMessage() {
 
         $.ajax({
             type: 'POST',
-            url: REMOTE_WEBSOCKET+'/chat',
+            url: CHAT_BACKEND_URL+'/chat',
             contentType: 'application/json',
             data: JSON.stringify({ name: message.name, content: message.content }),
             error: function (xhr, status, error) {

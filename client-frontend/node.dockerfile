@@ -10,5 +10,8 @@ COPY ./public ./public
 COPY server.js .
 
 EXPOSE 3000
-
+ENV GOOGLE_CLIENT_ID ""
+ENV GOOGLE_CLIENT_SECRET ""
+ENV BACKEND_URL ""
+ENV REMOTE_BACKEND_URL ""
 CMD ["node", "server.js"]

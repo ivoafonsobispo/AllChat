@@ -1,6 +1,6 @@
 var Key = null;
 var BACKEND_URL = null;
-var REMOTE_WEBSOCKET = null;
+var CHAT_BACKEND_URL = null;
 function showMessageBroadcast(message) {
     $("#broadcast-chat").append("<tr><td>" + message + "</td></tr>");
 }
@@ -62,7 +62,7 @@ $('#loginForm').submit(async function (event) {
 
     google.accounts.id.prompt((notification) => {
         if(notification.isNotDisplayed() || notification.isSkippedMoment()) {
-          console.log("Prompt cancelled by user");
+			console.log("Prompt cancelled by user");
         }
     });
 });
@@ -74,18 +74,19 @@ function logout(){
 }
 
 $(function () {
+	
+    $("form").on('submit', (e) => e.preventDefault());
+    $("#createAccountBtn").click(() => createUser());
+    $("#logoutBtn").click(() => logout())
+	
 	$.get('/env/KEY').done(function (data) {
 		console.log(data)
 		console.log(data.KEY)
 		Key = data.KEY;
 		BACKEND_URL = data.BACKEND_URL;
-		REMOTE_WEBSOCKET = data.REMOTE_WEBSOCKET
+		CHAT_BACKEND_URL = data.CHAT_BACKEND_URL
+		
 	});
-    $("form").on('submit', (e) => e.preventDefault());
-    $("#createAccountBtn").click(() => createUser());
-    $("#logoutBtn").click(() => logout())
-	//Get /API/KEY
-	
 	
 	
 });

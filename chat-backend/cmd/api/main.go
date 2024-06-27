@@ -12,8 +12,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const dbName = "chatdb"
-
 func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -28,7 +26,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db := client.Database(dbName)
+	db := client.Database("chatdb")
 	s := server.NewServer(db)
 	defer s.Close()
 

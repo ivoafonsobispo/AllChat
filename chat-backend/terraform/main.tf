@@ -1,6 +1,26 @@
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 4.0"
+    }
+    mongodbatlas = {
+      source  = "mongodb/mongodbatlas"
+      version = "~> 1.0"
+    }
+  }
+
+  required_version = ">= 0.12"
+}
+
 provider "google" {
-  project = "your-gcp-project-id"
+  project = "chat-app-419508"
   region  = "us-central1"
+}
+
+provider "mongodbatlas" {
+  public_key  = "your_public_key"
+  private_key = "your_private_key"
 }
 
 resource "google_container_cluster" "primary" {
@@ -20,6 +40,7 @@ resource "google_container_cluster" "primary" {
 resource "google_container_node_pool" "primary_preemptible_nodes" {
   cluster    = google_container_cluster.primary.name
   node_count = 1
+
   node_config {
     preemptible  = true
     machine_type = "e2-medium"
@@ -27,28 +48,35 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
       "https://www.googleapis.com/auth/cloud-platform",
     ]
   }
+
   location = google_container_cluster.primary.location
 }
 
-resource "google_sql_database_instance" "postgres_instance" {
-  name             = "postgres-instance"
-  database_version = "POSTGRES_12"
-  region           = "us-central1"
+resource "mongodbatlas_cluster" "atlas_cluster" {
+  project_id   = "your_project_id"
+  name         = "my-mongo-cluster"
+  cluster_type = "REPLICASET"
 
-  settings {
-    tier = "db-f1-micro"
+  provider_instance_size_name = "M10"
+  provider_name               = "GCP"
+  provider_region_name        = "US_CENTRAL"
+}
+
+resource "mongodbatlas_database_user" "chat_user" {
+  project_id         = "your_project_id"
+  username           = "chatuser"
+  password           = "yourpassword"
+  auth_database_name = "admin"
+  roles {
+    role_name     = "readWrite"
+    database_name = "chatdb"
   }
 }
 
-resource "google_sql_database" "chat_db" {
-  name     = "chatdb"
-  instance = google_sql_database_instance.postgres_instance.name
-}
-
-resource "google_sql_user" "chat_user" {
-  name     = "chatuser"
-  instance = google_sql_database_instance.postgres_instance.name
-  password = "yourpassword"
+resource "mongodbatlas_database" "chat_db" {
+  project_id   = "your_project_id"
+  cluster_name = mongodbatlas_cluster.atlas_cluster.name
+  name         = "chatdb"
 }
 
 output "kubernetes_cluster_name" {

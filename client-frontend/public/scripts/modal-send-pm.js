@@ -22,6 +22,19 @@ var sendPMSendPM = document.getElementById("send_pm_modal_send_pm");
 // ----- Get the modal error message element
 var sendPMErrorMessage = document.getElementById("send_pm_modal_error_message");
 
+var configData;
+fetch('/config')
+    .then(response => response.json())
+    .then(config => {
+        // console.log('Frontend URL:', config.frontendURL);
+        // console.log('Google Client ID:', config.googleClientId);
+        // console.log('Google Client Secret:', config.googleClientSecret);
+        configData = config
+
+    })
+    .catch(error => console.error('Error fetching config:', error));
+
+
 async function displayUsersSendPMModal(users) {
     var usersListHTML = '';
 
@@ -88,7 +101,7 @@ sendPMSendPM.onclick = async function() {
     var pmExists = await checkIfPmExists(userNames)
 
     if (pmExists){
-        window.location.replace(`http://localhost:3000/pm/${pmExists["id"]}`);
+        window.location.replace(`${configData.frontendURL}pm/${pmExists["id"]}`);
         return;
     }
 
@@ -104,5 +117,5 @@ sendPMSendPM.onclick = async function() {
     console.log(group);
 
     sendPMErrorMessage.style.display = "none";
-    window.location.replace(`http://localhost:3000/pm/${group.id}`);
+    window.location.replace(`${configData.frontendURL}pm/${group.id}`);
 }

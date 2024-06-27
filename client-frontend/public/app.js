@@ -1,9 +1,18 @@
-var Key = null;
-
+console.log(googleClientId)
 function showMessageBroadcast(message) {
     $("#broadcast-chat").append("<tr><td>" + message + "</td></tr>");
 }
 
+var configData;
+fetch('/config')
+    .then(response => response.json())
+    .then(config => {
+        configData = config
+
+    })
+    .catch(error => console.error('Error fetching config:', error));
+
+    
 function getUserInfo() {
     var storedInfo = localStorage.getItem('userInfo');
     if (storedInfo) {
@@ -51,7 +60,7 @@ $('#loginForm').submit(async function (event) {
     event.preventDefault(); // Prevent form submission
 
     google.accounts.id.initialize({
-        client_id: Key,
+        client_id: configData.googleClientId,
         callback: handleCredentialResponse,
         ux_mode: "redirect",
         context: "signin",
@@ -77,13 +86,7 @@ $(function () {
     $("#createAccountBtn").click(() => createUser());
     $("#logoutBtn").click(() => logout())
 	//Get /API/KEY
-	
-	$.get('/env/KEY').done(function (data) {
-		console.log(data)
-		console.log(data.KEY)
-		Key = data.KEY;
-	});
-	
+
 });
 
 updateButtonsDisabled()

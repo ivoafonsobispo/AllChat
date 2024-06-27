@@ -1,10 +1,26 @@
+var configData;
+
+(async () => {
+    try {
+        fetch('/config')
+    .then(response => response.json())
+    .then(config => {
+        console.log(config)
+        configData = config
+
+    })
+    .catch(error => console.error('Error fetching config:', error));
+
+
+
 // --- Users
 function createUser() {
     var username = $('#newUsername').val();
+    console.log(configData);
 
     $.ajax({
         type: 'POST',
-        url: 'http://localhost:8000/api/users',
+        url: configData.backendURL + 'api/users',
         contentType: 'application/json',
         data: JSON.stringify({ name: username, password: 123 }),
         success: function (response) {
@@ -23,7 +39,7 @@ async function getUsers() {
     return new Promise((resolve, reject) => {
         $.ajax({
             type: 'GET',
-            url: 'http://localhost:8000/api/users',
+            url: configData.backendURL + 'api/users',
             contentType: 'application/json',
             success: function (response) {
                 resolve(response);
@@ -41,7 +57,7 @@ function LoginPost(userData){
     // Send AJAX request
     $.ajax({
         type: 'POST',
-        url: 'http://localhost:8000/api/users/login',
+        url: configData.backendURL + 'api/users/login',
         contentType: 'application/json',
         data: JSON.stringify(userData),
         success: function (response) {
@@ -75,7 +91,7 @@ async function createGroupPost(users){
     return new Promise((resolve, reject) => {
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:8000/api/groups',
+            url: configData.backendURL + 'api/groups',
             contentType: 'application/json',
             data: JSON.stringify({ name: groupName, users: users, is_pm_group: is_pm_group }),
             success: function (response) {
@@ -97,7 +113,7 @@ async function getGroups() {
     return new Promise((resolve, reject) => {
         $.ajax({
             type: 'GET',
-            url: 'http://localhost:8000/api/groups',
+            url: configData.backendURL + 'api/groups',
             contentType: 'application/json',
             success: function (response) {
                 resolve(response);
@@ -114,7 +130,7 @@ async function getUserGroups(user_id) {
     return new Promise((resolve, reject) => {
         $.ajax({
             type: 'GET',
-            url: `http://localhost:8000/api/users/${user_id}`,
+            url: configData.backendURL + `api/users/${user_id}`,
             contentType: 'application/json',
             success: function (response) {
                 resolve(response.groups);
@@ -131,7 +147,7 @@ async function getGroupDetails(id) {
     return new Promise((resolve, reject) => {
         $.ajax({
             type: 'GET',
-            url: `http://localhost:8000/api/groups/${id}`,
+            url: configData.backendURL + `api/groups/${id}`,
             success: function (response) {
                 resolve(response);
             },
@@ -147,7 +163,7 @@ async function checkIfPmExists(users){
     return new Promise((resolve, reject) => {
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:8000/api/pms',
+            url: configData.backendURL + 'api/pms',
             contentType: 'application/json',
             data: JSON.stringify({ "Id_targ": users }),
             success: function (response) {
@@ -165,3 +181,9 @@ async function checkIfPmExists(users){
         });
     });
 }
+
+} catch (error) {
+    // Handle any errors that occurred during the fetch
+    console.error('Error during fetchConfigData execution:', error);
+}
+})();

@@ -1,20 +1,34 @@
 const express = require('express');
 const path = require('path');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000; // Use port 3000 by default, or use the one specified in the environment variable
-const KEY = process.env.GOOGLE_CLIENT_ID; 
+
 //make KEY available in all javascript
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/env/KEY', (req, res) => {
-	res.json({ KEY: KEY, PORT: PORT});
-  });// Define routes
+// Serve environment variables to client-side
+app.get('/config', (req, res) => {
+    res.json({
+        websocketsURL: process.env.WEBSOCKETS_URL,
+        chatbackendURL: process.env.CHAT_BACKEND_URL,
+        googleClientId: process.env.GOOGLE_CLIENT_ID,
+        googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        frontendURL: process.env.FRONTEND_URL,
+        backendURL: process.env.BACKEND_URL
+    });
+});
+
 // ----- Index page
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.render('index.html', {
+        googleClientId: process.env.GOOGLE_CLIENT_ID,
+        googleClientSecret: process.env.GOOGLE_CLIENT_SECRET
+    });
+    // res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 // -----  PM page
 app.get('/pm/:id', (req, res) => {

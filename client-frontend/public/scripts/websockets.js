@@ -2,8 +2,19 @@ let socket;
 
 var broadcastChatTitle = document.getElementById("broadcast-chat-title");
 
+var configData;
+fetch('/config')
+    .then(response => response.json())
+    .then(config => {
+        configData = config
+
+    })
+    .catch(error => console.error('Error fetching config:', error));
+
+
+
 function connect() {
-    socket = new WebSocket("ws://localhost:8001/chat");
+    socket = new WebSocket(configData.websocketsURL + "/chat");
 
     socket.onopen = function (event) {
         setConnected(true);
@@ -45,7 +56,7 @@ function sendMessage() {
 
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:8002/chat',
+            url: configData.chatbackendURL + 'chat',
             contentType: 'application/json',
             data: JSON.stringify({ name: message.name, content: message.content }),
             error: function (xhr, status, error) {

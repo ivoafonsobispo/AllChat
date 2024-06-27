@@ -5,6 +5,20 @@ var groupId = getQueryParams().id;
 
 let socket;
 
+var configData;
+fetch('/config')
+    .then(response => response.json())
+    .then(config => {
+        // console.log('Frontend URL:', config.frontendURL);
+        // console.log('Google Client ID:', config.googleClientId);
+        // console.log('Google Client Secret:', config.googleClientSecret);
+        configData = config
+        document.getElementById('chat-back-href').href = config.frontendURL;
+
+    })
+    .catch(error => console.error('Error fetching config:', error));
+
+
 function getUserInfo() {
     var storedInfo = localStorage.getItem('userInfo');
     if (storedInfo) {
@@ -105,7 +119,7 @@ function formatMessageDate(isoDateString){
 
 // Websocket Config
 function connect() {
-    socket = new WebSocket("ws://localhost:8001/chat?groupId=" + groupId);
+    socket = new WebSocket(configData.websocketsURL + "/chat?groupId=" + groupId);
 
     socket.onopen = function (event) {
         console.log("Connected: " + event);

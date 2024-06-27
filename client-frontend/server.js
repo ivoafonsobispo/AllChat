@@ -5,13 +5,14 @@ const app = express();
 const PORT = process.env.PORT || 3000; // Use port 3000 by default, or use the one specified in the environment variable
 const KEY = process.env.GOOGLE_CLIENT_ID; 
 const BACKEND_URL = process.env.BACKEND_URL;
+const REMOTE_WEBSOCKET = process.env.REMOTE_WEBSOCKET;
 //make KEY available in all javascript
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/env/KEY', (req, res) => {
-	res.json({ KEY: KEY, PORT: PORT, BACKEND_URL: BACKEND_URL });
+	res.json({ KEY: KEY, PORT: PORT, BACKEND_URL: BACKEND_URL, REMOTE_WEBSOCKET: REMOTE_WEBSOCKET});
   });// Define routes
 // ----- Index page
 app.get('/', (req, res) => {

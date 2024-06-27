@@ -1,4 +1,4 @@
-var Endpoint = null
+var Endpoint = localStorage.getItem('Endpoint');
 // --- Users
 function createUser() {
     var username = $('#newUsername').val();
@@ -42,6 +42,7 @@ function LoginPost(userData, Endpoints){
     // Send AJAX request
 	console.log(Endpoints)
 	Endpoint = Endpoints
+	localStorage.setItem('Endpoint', Endpoint);
     $.ajax({
         type: 'POST',
         url: Endpoint+'/api/users/login',

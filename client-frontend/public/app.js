@@ -1,5 +1,6 @@
 var Key = null;
 var BACKEND_URL = null;
+var REMOTE_WEBSOCKET = null;
 function showMessageBroadcast(message) {
     $("#broadcast-chat").append("<tr><td>" + message + "</td></tr>");
 }
@@ -78,6 +79,7 @@ $(function () {
 		console.log(data.KEY)
 		Key = data.KEY;
 		BACKEND_URL = data.BACKEND_URL;
+		REMOTE_WEBSOCKET = data.REMOTE_WEBSOCKET
 	});
     $("form").on('submit', (e) => e.preventDefault());
     $("#createAccountBtn").click(() => createUser());

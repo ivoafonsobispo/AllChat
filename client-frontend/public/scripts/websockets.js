@@ -1,8 +1,16 @@
 let socket;
-
+var REMOTE_WEBSOCKET = null;
 var broadcastChatTitle = document.getElementById("broadcast-chat-title");
 
 function connect() {
+	//TODO this should be async but oh well
+	$.ajax({
+		type: 'GET',
+		url: 'http://localhost:3000/env/KEY',
+		content
+	}).done(function(data){
+		REMOTE_WEBSOCKET = data.REMOTE_WEBSOCKET;
+	});	
     socket = new WebSocket("ws://localhost:8001/chat");
 
     socket.onopen = function (event) {
@@ -22,6 +30,8 @@ function connect() {
         setConnected(false);
         console.log("Disconnected");
     };
+	
+
 }
 
 function disconnect() {
@@ -31,6 +41,8 @@ function disconnect() {
 }
 
 function sendMessage() {
+	console.log(REMOTE_WEBSOCKET)
+
     var storedInfo = getUserInfo();
 
     if (storedInfo) {
@@ -45,7 +57,7 @@ function sendMessage() {
 
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:8002/chat',
+            url: REMOTE_WEBSOCKET+'/chat',
             contentType: 'application/json',
             data: JSON.stringify({ name: message.name, content: message.content }),
             error: function (xhr, status, error) {

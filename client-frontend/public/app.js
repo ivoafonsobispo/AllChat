@@ -1,3 +1,5 @@
+var Key = null;
+
 function showMessageBroadcast(message) {
     $("#broadcast-chat").append("<tr><td>" + message + "</td></tr>");
 }
@@ -49,7 +51,7 @@ $('#loginForm').submit(async function (event) {
     event.preventDefault(); // Prevent form submission
 
     google.accounts.id.initialize({
-        client_id: '1049613930159-p4pnna3htktedb4dacp3r1qcrsjb4kv0.apps.googleusercontent.com',
+        client_id: Key,
         callback: handleCredentialResponse,
         ux_mode: "redirect",
         context: "signin",
@@ -74,6 +76,14 @@ $(function () {
     $("form").on('submit', (e) => e.preventDefault());
     $("#createAccountBtn").click(() => createUser());
     $("#logoutBtn").click(() => logout())
+	//Get /API/KEY
+	
+	$.get('/env/KEY').done(function (data) {
+		console.log(data)
+		console.log(data.KEY)
+		Key = data.KEY;
+	});
+	
 });
 
 updateButtonsDisabled()

@@ -6,7 +6,10 @@ services:
       context: ./accounts-backend
       dockerfile: go.dockerfile
     environment:
-      DATABASE_URL: 'postgres://admin:admin@35.239.202.252:5432/postgres?sslmode=disable'
+
+      DATABASE_URL: 'postgres://admin:admin@35.188.190.81:5432/postgres?sslmode=disable'
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
     ports:
       - '8000:8000'
 
@@ -36,6 +39,9 @@ services:
     build:
       context: ./client-frontend
       dockerfile: node.dockerfile
+    environment:
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
     ports:
       - '3000:3000'
 

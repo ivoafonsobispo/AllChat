@@ -1,3 +1,5 @@
+var Key = null;
+
 function showMessageBroadcast(message) {
     $("#broadcast-chat").append("<tr><td>" + message + "</td></tr>");
 }
@@ -9,14 +11,6 @@ function getUserInfo() {
     } else {
         return null;
     }
-}
-
-// Check if user credentials exist in local storage on page load
-var storedInfo = getUserInfo();
-if (storedInfo) {
-    // If credentials exist, populate the login form
-    $('#name').val(storedInfo.name);
-    $('#password').val(storedInfo.password);
 }
 
 // login Logic
@@ -38,21 +32,38 @@ function updateButtonsDisabled(){
         sendBroadcastMessageButton.setAttribute("disabled", "disabled");
     }
 }
+  
+const handleCredentialResponse = (credsResponse)=>{
+    // console.log(credsResponse);
+    var headerObj  = KJUR.jws.JWS.readSafeJSONString(b64utoutf8(credsResponse.credential.split(".")[0]));
+    var payloadObj  = KJUR.jws.JWS.readSafeJSONString(b64utoutf8(credsResponse.credential.split(".")[1]));
+    // console.log(headerObj);
+    // console.log(payloadObj); // User data
 
-$('#loginForm').submit(function (event) {
+    var userData = {
+        "name": payloadObj.email,
+        "password": 123
+    }
+    LoginPost(userData)
+};
+
+$('#loginForm').submit(async function (event) {
     event.preventDefault(); // Prevent form submission
 
-    // Get username and password values
-    var username = $('#name').val();
-    var password = $('#password').val();
+    google.accounts.id.initialize({
+        client_id: Key,
+        callback: handleCredentialResponse,
+        ux_mode: "redirect",
+        context: "signin",
+        cancel_on_tap_outside: false,
+        auto_select: true
+    });
 
-    // Create data object with username and password
-    var data = {
-        name: username,
-        password: password
-    };
-
-    LoginPost(data);
+    google.accounts.id.prompt((notification) => {
+        if(notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          console.log("Prompt cancelled by user");
+        }
+    });
 });
 
 function logout(){
@@ -65,6 +76,14 @@ $(function () {
     $("form").on('submit', (e) => e.preventDefault());
     $("#createAccountBtn").click(() => createUser());
     $("#logoutBtn").click(() => logout())
+	//Get /API/KEY
+	
+	$.get('/env/KEY').done(function (data) {
+		console.log(data)
+		console.log(data.KEY)
+		Key = data.KEY;
+	});
+	
 });
 
 updateButtonsDisabled()

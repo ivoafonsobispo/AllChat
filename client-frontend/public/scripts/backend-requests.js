@@ -1,13 +1,12 @@
 // --- Users
 function createUser() {
     var username = $('#newUsername').val();
-    var password = $('#newPassword').val();
 
     $.ajax({
         type: 'POST',
         url: 'http://localhost:8000/api/users',
         contentType: 'application/json',
-        data: JSON.stringify({ name: username, password: password }),
+        data: JSON.stringify({ name: username, password: 123 }),
         success: function (response) {
             // Handle success response
             alert('Account created successfully!');
@@ -49,7 +48,6 @@ function LoginPost(userData){
             var userInfo = {
                 "id": response.id,
                 "name": userData.name,
-                "password": userData.password
             };
             
             // Save user credentials in local storage
@@ -134,7 +132,6 @@ async function getGroupDetails(id) {
         $.ajax({
             type: 'GET',
             url: `http://localhost:8000/api/groups/${id}`,
-            contentType: 'application/json',
             success: function (response) {
                 resolve(response);
             },

@@ -6,6 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 3000; // Use port 3000 by default, or use the one specified in the environment variable
 
 //make KEY available in all javascript
+console.log(process.env)
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
@@ -24,10 +25,7 @@ app.get('/config', (req, res) => {
 
 // ----- Index page
 app.get('/', (req, res) => {
-    res.render('index.html', {
-        googleClientId: process.env.GOOGLE_CLIENT_ID,
-        googleClientSecret: process.env.GOOGLE_CLIENT_SECRET
-    });
+    res.sendFile(path.join(__dirname, 'public', 'pages', 'index.html'));
     // res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 // -----  PM page

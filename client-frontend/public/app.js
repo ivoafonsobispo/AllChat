@@ -1,7 +1,8 @@
-console.log(googleClientId)
 function showMessageBroadcast(message) {
     $("#broadcast-chat").append("<tr><td>" + message + "</td></tr>");
 }
+
+console.log(process.env)
 
 var configData;
 fetch('/config')

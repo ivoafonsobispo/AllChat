@@ -1,15 +1,15 @@
 var configData;
 
-(async () => {
-    try {
-        fetch('/config')
-    .then(response => response.json())
-    .then(config => {
-        console.log(config)
-        configData = config
+console.log(process.env)
 
-    })
-    .catch(error => console.error('Error fetching config:', error));
+fetch('/config')
+.then(response => response.json())
+.then(config => {
+    console.log(config)
+    configData = config
+
+})
+.catch(error => console.error('Error fetching config:', error));
 
 
 
@@ -181,9 +181,3 @@ async function checkIfPmExists(users){
         });
     });
 }
-
-} catch (error) {
-    // Handle any errors that occurred during the fetch
-    console.error('Error during fetchConfigData execution:', error);
-}
-})();

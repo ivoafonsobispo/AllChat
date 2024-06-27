@@ -1,9 +1,8 @@
 // Groups and PMs
 var configData;
-(async () => {
-    try {
-        fetch('/config')
-    .then(response => response.json())
+
+fetch('/config')
+.then(response => response.json())
     .then(config => {
         console.log(config)
         configData = config
@@ -46,9 +45,3 @@ async function displayUserChats() {
 
 // Call the displayUserChats function
 displayUserChats();
-
-} catch (error) {
-    // Handle any errors that occurred during the fetch
-    console.error('Error during fetchConfigData execution:', error);
-}
-})();

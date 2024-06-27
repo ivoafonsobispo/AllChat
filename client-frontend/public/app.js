@@ -85,7 +85,15 @@ $(function () {
 		Key = data.KEY;
 		BACKEND_URL = data.BACKEND_URL;
 		CHAT_BACKEND_URL = data.CHAT_BACKEND_URL
-		
+		WEBSOCKETS_URL = data.WEBSOCKETS_URL
+		//Set everythigng to local storage
+		localStorage.setItem('CHAT_BACKEND_URL', CHAT_BACKEND_URL);
+		localStorage.setItem('BACKEND_URL', BACKEND_URL);
+		localStorage.setItem('WEBSOCKETS_URL', data.WEBSOCKETS_URL);
+		var WEBSOCKETS_URL = localStorage.getItem('WEBSOCKETS_URL');
+		var CHAT_BACKEND_URL = localStorage.getItem('CHAT_BACKEND_URL');
+		var BACKEND_URL = localStorage.getItem('BACKEND_URL');
+
 	});
 	
 	

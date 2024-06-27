@@ -1,6 +1,7 @@
 let socket;
 var WEBSOCKETS_URL = localStorage.getItem('WEBSOCKETS_URL');
 var CHAT_BACKEND_URL = localStorage.getItem('CHAT_BACKEND_URL');
+var BACKEND_URL = localStorage.getItem('BACKEND_URL');
 var broadcastChatTitle = document.getElementById("broadcast-chat-title");
 function fetchEnvs(){
 	return new Promise((resolve, reject) => {
@@ -23,18 +24,13 @@ function fetchEnvs(){
 		});
 	})
 }
-async function connect() {
-	$.get('/env/KEY').done(function (data) {
-		console.log(data)
-		console.log(data.KEY)
-		Key = data.KEY;
-		BACKEND_URL = data.BACKEND_URL;
-		CHAT_BACKEND_URL = data.CHAT_BACKEND_URL
-		
-	});
+function connect() {
+	WEBSOCKETS_URL = localStorage.getItem('WEBSOCKETS_URL');
+	CHAT_BACKEND_URL = localStorage.getItem('CHAT_BACKEND_URL');
+	BACKEND_URL = localStorage.getItem('BACKEND_URL');
 	console.log("HERE");
 	console.log(localStorage.getItem('WEBSOCKETS_URL'))
-    socket = new WebSocket(localStorage.getItem('WEBSOCKETS_URL')+"/chat");
+    socket = new WebSocket(WEBSOCKETS_URL+"/chat");
 
     socket.onopen = function (event) {
         setConnected(true);

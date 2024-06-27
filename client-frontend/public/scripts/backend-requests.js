@@ -65,14 +65,6 @@ function LoginPost(userData){
     });
 }
 
-async function LoginGoogle(){
-    return new Promise((resolve, reject) => {
-		//oauth to google 127.0.0.1:8000 redirect
-		window.location.href = "http://localhost:8000/auth/google";
-		
-    });
-}
-
 // --- Groups
 async function createGroupPost(users){
     const names = users.map(user => user["name"]).sort();

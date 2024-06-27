@@ -1,5 +1,5 @@
 let socket;
-var REMOTE_WEBSOCKET = null;
+var REMOTE_WEBSOCKET = localStorage.getItem('REMOTE_WEBSOCKET');
 var broadcastChatTitle = document.getElementById("broadcast-chat-title");
 
 function connect() {
@@ -10,6 +10,7 @@ function connect() {
 		content
 	}).done(function(data){
 		REMOTE_WEBSOCKET = data.REMOTE_WEBSOCKET;
+		localStorage.setItem('REMOTE_WEBSOCKET', REMOTE_WEBSOCKET);
 	});	
     socket = new WebSocket("ws://localhost:8001/chat");
 

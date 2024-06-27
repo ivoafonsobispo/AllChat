@@ -1,7 +1,13 @@
-variable "external_port" {
+variable "external_port_allchataccounts" {
     type = number
-    description = "External port for the server"
+    description = "External port for the allchataccounts server"
     default = 0
+}
+
+variable "external_port_allchatwsserver" {
+    type = number
+    description = "External port for the allchatwsserver server"
+    default = '8001'
 }
 
 variable "google_client_id" {

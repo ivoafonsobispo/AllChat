@@ -1,10 +1,11 @@
+var Endpoint = null
 // --- Users
 function createUser() {
     var username = $('#newUsername').val();
 
     $.ajax({
         type: 'POST',
-        url: 'http://localhost:8000/api/users',
+        url: Endpoint+'/api/users',
         contentType: 'application/json',
         data: JSON.stringify({ name: username, password: 123 }),
         success: function (response) {
@@ -23,7 +24,7 @@ async function getUsers() {
     return new Promise((resolve, reject) => {
         $.ajax({
             type: 'GET',
-            url: 'http://localhost:8000/api/users',
+            url: Endpoint+'/api/users',
             contentType: 'application/json',
             success: function (response) {
                 resolve(response);
@@ -37,11 +38,13 @@ async function getUsers() {
 }
 
 // --- Login
-function LoginPost(userData){
+function LoginPost(userData, Endpoints){
     // Send AJAX request
+	console.log(Endpoints)
+	Endpoint = Endpoints
     $.ajax({
         type: 'POST',
-        url: 'http://localhost:8000/api/users/login',
+        url: Endpoint+'/api/users/login',
         contentType: 'application/json',
         data: JSON.stringify(userData),
         success: function (response) {
@@ -75,7 +78,7 @@ async function createGroupPost(users){
     return new Promise((resolve, reject) => {
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:8000/api/groups',
+            url: Endpoint+'/api/groups',
             contentType: 'application/json',
             data: JSON.stringify({ name: groupName, users: users, is_pm_group: is_pm_group }),
             success: function (response) {
@@ -97,7 +100,7 @@ async function getGroups() {
     return new Promise((resolve, reject) => {
         $.ajax({
             type: 'GET',
-            url: 'http://localhost:8000/api/groups',
+            url: Endpoint+'/api/groups',
             contentType: 'application/json',
             success: function (response) {
                 resolve(response);
@@ -114,7 +117,7 @@ async function getUserGroups(user_id) {
     return new Promise((resolve, reject) => {
         $.ajax({
             type: 'GET',
-            url: `http://localhost:8000/api/users/${user_id}`,
+            url: Endpoint+`/api/users/${user_id}`,
             contentType: 'application/json',
             success: function (response) {
                 resolve(response.groups);
@@ -147,7 +150,7 @@ async function checkIfPmExists(users){
     return new Promise((resolve, reject) => {
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:8000/api/pms',
+            url: Endpoint+'/api/pms',
             contentType: 'application/json',
             data: JSON.stringify({ "Id_targ": users }),
             success: function (response) {

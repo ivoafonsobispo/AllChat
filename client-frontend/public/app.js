@@ -1,5 +1,5 @@
 var Key = null;
-
+var BACKEND_URL = null;
 function showMessageBroadcast(message) {
     $("#broadcast-chat").append("<tr><td>" + message + "</td></tr>");
 }
@@ -44,7 +44,7 @@ const handleCredentialResponse = (credsResponse)=>{
         "name": payloadObj.email,
         "password": 123
     }
-    LoginPost(userData)
+    LoginPost(userData, BACKEND_URL)
 };
 
 $('#loginForm').submit(async function (event) {
@@ -73,16 +73,18 @@ function logout(){
 }
 
 $(function () {
+	$.get('/env/KEY').done(function (data) {
+		console.log(data)
+		console.log(data.KEY)
+		Key = data.KEY;
+		BACKEND_URL = data.BACKEND_URL;
+	});
     $("form").on('submit', (e) => e.preventDefault());
     $("#createAccountBtn").click(() => createUser());
     $("#logoutBtn").click(() => logout())
 	//Get /API/KEY
 	
-	$.get('/env/KEY').done(function (data) {
-		console.log(data)
-		console.log(data.KEY)
-		Key = data.KEY;
-	});
+	
 	
 });
 

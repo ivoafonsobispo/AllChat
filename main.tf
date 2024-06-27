@@ -74,10 +74,10 @@ resource "docker_container" "allchatclientfrontend" {
     name = "allchatclientfrontend" 
     
     env = [
-        "GOOGLE_CLIENT_ID=${var.google_client_id}"
-        "GOOGLE_CLIENT_SECRET=${var.google_client_secret}"
-        "BACKEND_URL=${var.backend_url}"
-        "WEBSOCKETS_URL=${var.websockets_url}"
+        "GOOGLE_CLIENT_ID=${var.google_client_id}",
+        "GOOGLE_CLIENT_SECRET=${var.google_client_secret}",
+        "BACKEND_URL=${var.backend_url}",
+        "WEBSOCKETS_URL=${var.websockets_url}",
         "CHAT_BACKEND_URL=${var.chat_backend_url}"
     ]
 

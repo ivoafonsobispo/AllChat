@@ -11,14 +11,6 @@ function getUserInfo() {
     }
 }
 
-// Check if user credentials exist in local storage on page load
-var storedInfo = getUserInfo();
-if (storedInfo) {
-    // If credentials exist, populate the login form
-    $('#name').val(storedInfo.name);
-    $('#password').val(storedInfo.password);
-}
-
 // login Logic
 function updateButtonsDisabled(){
     var connectButton = document.getElementById("connect");
@@ -40,27 +32,21 @@ function updateButtonsDisabled(){
 }
   
 const handleCredentialResponse = (credsResponse)=>{
-    console.log(credsResponse);
+    // console.log(credsResponse);
     var headerObj  = KJUR.jws.JWS.readSafeJSONString(b64utoutf8(credsResponse.credential.split(".")[0]));
     var payloadObj  = KJUR.jws.JWS.readSafeJSONString(b64utoutf8(credsResponse.credential.split(".")[1]));
-    console.log(headerObj);
-    console.log(payloadObj); // User data
+    // console.log(headerObj);
+    // console.log(payloadObj); // User data
 
-    // localStorage.setItem("userInfo")
+    var userData = {
+        "name": payloadObj.email,
+        "password": 123
+    }
+    LoginPost(userData)
 };
 
 $('#loginForm').submit(async function (event) {
     event.preventDefault(); // Prevent form submission
-
-    // Get username and password values
-    var username = $('#name').val();
-    var password = $('#password').val();
-
-    // Create data object with username and password
-    var data = {
-        name: username,
-        password: password
-    };
 
     google.accounts.id.initialize({
         client_id: '1049613930159-p4pnna3htktedb4dacp3r1qcrsjb4kv0.apps.googleusercontent.com',
